@@ -105,5 +105,7 @@ import Foundation
   @Setting(true, #keyPath(animatePlusOne)) static var animatePlusOne: Bool
 
   @Setting(true,
+           #keyPath(reviewSummaryViewShowAnswers)) static var reviewSummaryViewShowAnswers: Bool
+  @Setting(true,
            #keyPath(subjectCatalogueViewShowAnswers)) static var subjectCatalogueViewShowAnswers: Bool
 }

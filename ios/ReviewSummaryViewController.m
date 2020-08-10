@@ -44,6 +44,12 @@
   [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
+- (IBAction)showAnswerClicked:(id)sender {
+  UISwitch *switchObject = (UISwitch *)sender;
+  Settings.reviewSummaryViewShowAnswers = switchObject.on;
+  [self setShowAnswers:Settings.reviewSummaryViewShowAnswers animated:true];
+}
+
 - (void)setItems:(NSArray<ReviewItem *> *)items {
   int currentLevel = [_services.localCachingClient getUserInfo].level;
 
@@ -92,13 +98,34 @@
 
     for (ReviewItem *item in incorrectItemsByLevel[level]) {
       TKMSubject *subject = [_services.dataLoader loadSubject:item.assignment.subjectId];
-      [model addItem:[[TKMSubjectModelItem alloc] initWithSubject:subject
-                                                         delegate:self
-                                                     readingWrong:item.answer.readingWrong
-                                                     meaningWrong:item.answer.meaningWrong]];
+      TKMSubjectModelItem *incorrectItem =
+          [[TKMSubjectModelItem alloc] initWithSubject:subject
+                                              delegate:self
+                                          readingWrong:item.answer.readingWrong
+                                          meaningWrong:item.answer.meaningWrong];
+      incorrectItem.showAnswers = Settings.reviewSummaryViewShowAnswers;
+      [model addItem:incorrectItem];
     }
   }
   _model = model;
+}
+
+- (void)setShowAnswers:(bool)showAnswers animated:(bool)animated {
+  for (int section = 0; section < _model.sectionCount; ++section) {
+    for (id<TKMModelItem> item in [_model itemsInSection:section]) {
+      if ([item isKindOfClass:TKMSubjectModelItem.class]) {
+        TKMSubjectModelItem *subjectItem = item;
+        subjectItem.showAnswers = showAnswers;
+      }
+    }
+  }
+
+  for (UITableViewCell *cell in self.tableView.visibleCells) {
+    if ([cell isKindOfClass:TKMSubjectModelView.class]) {
+      TKMSubjectModelView *subjectCell = (TKMSubjectModelView *)cell;
+      [subjectCell setShowAnswers:showAnswers animated:animated];
+    }
+  }
 }
 
 #pragma mark - TKMSubjectDelegate
