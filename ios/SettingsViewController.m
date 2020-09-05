@@ -191,7 +191,8 @@ typedef void (^NotificationPermissionHandler)(BOOL granted);
   TKMSwitchModelItem *keyboardSwitchItem = [[TKMSwitchModelItem alloc]
       initWithStyle:UITableViewCellStyleSubtitle
               title:@"Switch to Japanese keyboard"
-           subtitle:@"Automatically switch to a Japanese keyboard to type reading answers"
+           subtitle:@"Automatically switch to a Japanese keyboard to type reading answers, "
+                     "and hides kanji suggestions."
                  on:Settings.autoSwitchKeyboard
              target:self
              action:@selector(autoSwitchKeyboard:)];
