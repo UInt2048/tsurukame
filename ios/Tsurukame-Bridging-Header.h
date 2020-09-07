@@ -29,7 +29,6 @@
 #import "SubjectsRemainingViewController.h"
 #import "SuccessAnimation.h"
 #import "TKMDownloadViewController.h"
-#import "TKMFontLoader.h"
 #import "TKMGradientView.h"
 #import "TKMKanaInput.h"
 #import "TKMReviewContainerViewController.h"
