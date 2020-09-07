@@ -821,7 +821,7 @@ static NSString *GetSessionCookie(NSURLSession *session) {
                          studyMaterials.meaningNote = d[@"data"][@"meaning_note"];
                        }
                        if (d[@"data"][@"reading_note"] != [NSNull null]) {
-                         studyMaterials.meaningNote = d[@"data"][@"reading_note"];
+                         studyMaterials.readingNote = d[@"data"][@"reading_note"];
                        }
                        if (d[@"data"][@"meaning_synonyms"] != [NSNull null]) {
                          studyMaterials.meaningSynonymsArray = d[@"data"][@"meaning_synonyms"];
@@ -855,6 +855,8 @@ static NSString *GetSessionCookie(NSURLSession *session) {
                      NSMutableDictionary *studyMaterial = [NSMutableDictionary dictionary];
                      [studyMaterial setObject:material.meaningSynonymsArray
                                        forKey:@"meaning_synonyms"];
+                     [studyMaterial setValue:material.meaningNote forKey:@"meaning_note"];
+                     [studyMaterial setValue:material.readingNote forKey:@"reading_note"];
 
                      NSMutableDictionary *payload = [NSMutableDictionary dictionary];
                      [payload setObject:studyMaterial forKey:@"study_material"];

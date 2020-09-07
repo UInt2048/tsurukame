@@ -131,6 +131,11 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
   private var tableModel: TKMTableModel?
   private var lastSubjectChipTapped: TKMSubjectChip?
 
+  private var subject: TKMSubject!
+  private var studyMaterials: TKMStudyMaterials?
+  private var assignment: TKMAssignment?
+  private var task: ReviewItem?
+
   @objc public func setup(withServices services: TKMServices, delegate: TKMSubjectDelegate) {
     self.services = services
     subjectDelegate = delegate
@@ -151,6 +156,12 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
       model.addSection("Meaning Note")
       model.add(notesItem)
     }
+    let hasMeaningNote = studyMaterials?.hasMeaningNote != nil
+    model.add(TKMBasicModelItem(style: .default,
+                                title: "\(hasMeaningNote ? "Edit" : "Create") meaning note",
+                                subtitle: nil,
+                                accessoryType: .none, target: self,
+                                action: #selector(editMeaningNote)))
   }
 
   private func addReadings(_ subject: TKMSubject,
@@ -174,6 +185,12 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
       model.addSection("Reading Note")
       model.add(notesItem)
     }
+    let hasReadingNote = studyMaterials?.hasReadingNote != nil
+    model.add(TKMBasicModelItem(style: .default,
+                                title: "\(hasReadingNote ? "Edit" : "Create") reading note",
+                                subtitle: nil,
+                                accessoryType: .none, target: self,
+                                action: #selector(editReadingNote)))
   }
 
   private func addComponents(_ subject: TKMSubject,
@@ -269,18 +286,33 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
     model.add(item)
   }
 
+  @objc private func showAllFields() {
+    update(withSubject: subject, studyMaterials: studyMaterials, assignment: assignment, task: nil)
+  }
+
   @objc public func update(withSubject subject: TKMSubject, studyMaterials: TKMStudyMaterials?,
                            assignment: TKMAssignment?, task: ReviewItem?) {
-    let model = TKMMutableTableModel(tableView: self), isReview = task != nil
     readingItem = nil
-    let meaningAttempted = task?.answeredMeaning == true || task?.answer.meaningWrong == true
-    let readingAttempted = subject.hasRadical == true || task?.answeredReading == true ||
-      task?.answer.readingWrong == true
+    self.subject = subject
+    self.studyMaterials = studyMaterials
+    self.assignment = assignment
+    self.task = task
+
+    let model = TKMMutableTableModel(tableView: self), isReview = task != nil,
+      meaningAttempted = task?.answeredMeaning == true || task?.answer.meaningWrong == true,
+      readingAttempted = task?.answeredReading == true || task?.answer.readingWrong == true,
+      meaningShown = !isReview || meaningAttempted, readingShown = !isReview || readingAttempted,
+      showMeaningItem = TKMBasicModelItem(style: .default, title: "Show meaning", subtitle: nil,
+                                          accessoryType: .none, target: self,
+                                          action: #selector(showAllFields)),
+      showReadingItem = TKMBasicModelItem(style: .default, title: "Show reading", subtitle: nil,
+                                          accessoryType: .none, target: self,
+                                          action: #selector(showAllFields))
 
     if subject.hasRadical {
-      addMeanings(subject, studyMaterials: studyMaterials, toModel: model)
+      if meaningShown {
+        addMeanings(subject, studyMaterials: studyMaterials, toModel: model)
 
-      if !isReview || meaningAttempted {
         model.addSection("Mnemonic")
         addFormattedText(subject.radical.formattedMnemonicArray as! [TKMFormattedText],
                          isHint: false,
@@ -291,15 +323,25 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
           addFormattedText(subject.radical.formattedDeprecatedMnemonicArray as! [TKMFormattedText],
                            isHint: false, toModel: model)
         }
+      } else {
+        model.add(showMeaningItem)
       }
       addAmalgamationSubjects(subject, toModel: model)
     }
     if subject.hasKanji {
-      addMeanings(subject, studyMaterials: studyMaterials, toModel: model)
-      addReadings(subject, studyMaterials: studyMaterials, toModel: model)
+      if meaningShown {
+        addMeanings(subject, studyMaterials: studyMaterials, toModel: model)
+      } else {
+        model.add(showMeaningItem)
+      }
+      if readingShown {
+        addReadings(subject, studyMaterials: studyMaterials, toModel: model)
+      } else {
+        model.add(showReadingItem)
+      }
       addComponents(subject, title: "Radicals", toModel: model)
 
-      if !isReview || meaningAttempted {
+      if meaningShown {
         model.addSection("Meaning Explanation")
         addFormattedText(subject.kanji.formattedMeaningMnemonicArray as! [TKMFormattedText],
                          isHint: false, toModel: model)
@@ -307,7 +349,7 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
                          isHint: true,
                          toModel: model)
       }
-      if !isReview || readingAttempted {
+      if readingShown {
         model.addSection("Reading Explanation")
         addFormattedText(subject.kanji.formattedReadingMnemonicArray as! [TKMFormattedText],
                          isHint: false, toModel: model)
@@ -319,22 +361,30 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
       addAmalgamationSubjects(subject, toModel: model)
     }
     if subject.hasVocabulary {
-      addMeanings(subject, studyMaterials: studyMaterials, toModel: model)
-      addReadings(subject, studyMaterials: studyMaterials, toModel: model)
+      if meaningShown {
+        addMeanings(subject, studyMaterials: studyMaterials, toModel: model)
+      } else {
+        model.add(showMeaningItem)
+      }
+      if readingShown {
+        addReadings(subject, studyMaterials: studyMaterials, toModel: model)
+      } else {
+        model.add(showReadingItem)
+      }
       addComponents(subject, title: "Kanji", toModel: model)
 
-      if !isReview || meaningAttempted {
+      if meaningShown {
         model.addSection("Meaning Explanation")
         addFormattedText(subject.vocabulary.formattedMeaningExplanationArray as! [TKMFormattedText],
                          isHint: false, toModel: model)
       }
-      if !isReview || readingAttempted {
+      if readingShown {
         model.addSection("Reading Explanation")
         addFormattedText(subject.vocabulary.formattedReadingExplanationArray as! [TKMFormattedText],
                          isHint: false, toModel: model)
       }
       addPartsOfSpeech(subject.vocabulary, toModel: model)
-      if !isReview || meaningAttempted {
+      if meaningShown {
         addContextSentences(subject, toModel: model)
       }
     }
@@ -374,6 +424,45 @@ class SubjectDetailsView: UITableView, TKMSubjectChipDelegate {
 
   @objc public func playAudio() {
     readingItem?.playAudio()
+  }
+
+  @objc public func editMeaningNote() {
+    editNote(subject: subject, studyMaterials: studyMaterials, isMeaningNote: true)
+  }
+
+  @objc public func editReadingNote() {
+    editNote(subject: subject, studyMaterials: studyMaterials, isMeaningNote: false)
+  }
+
+  @objc func editNote(subject: TKMSubject, studyMaterials: TKMStudyMaterials?,
+                      isMeaningNote: Bool) {
+    let materials = studyMaterials ?? TKMStudyMaterials()
+    if studyMaterials == nil {
+      materials.subjectId = subject.id_p
+      materials.subjectType = subject.subjectTypeString
+    }
+    let hasNote = isMeaningNote ? materials.hasMeaningNote : materials.hasReadingNote
+    let ac = UIAlertController(title: "\(hasNote ? "Edit" : "Create") note",
+                               message: "\(hasNote ? "Edit" : "Create") the \(isMeaningNote ? "meaning" : "reading") note",
+                               preferredStyle: .alert)
+    ac.addTextField(configurationHandler: { textField in
+      textField.placeholder = "Type \(isMeaningNote ? "meaning" : "reading") note here"
+      if hasNote {
+        textField.text = isMeaningNote ? materials.meaningNote : materials.readingNote
+      }
+    })
+    ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+      let noteText = ac.textFields?.first?.text
+      if isMeaningNote { materials.meaningNote = noteText }
+      else { materials.readingNote = noteText }
+      self.services.localCachingClient.updateStudyMaterial(materials)
+      self.update(withSubject: subject, studyMaterials: materials, assignment: self.assignment,
+                  task: self.task)
+    }))
+    ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+    let vc = UIApplication.shared.keyWindow!.rootViewController!
+    vc.present(ac, animated: true, completion: nil)
   }
 
   // MARK: - TKMSubjectChipDelegate
