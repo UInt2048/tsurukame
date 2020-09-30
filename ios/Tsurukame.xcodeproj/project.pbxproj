@@ -13,6 +13,11 @@
 		4811E39224D9CAE2003B5089 /* NSDate+TimeAgo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4811E39124D9CAE2003B5089 /* NSDate+TimeAgo.m */; };
 		481B2FED23C55AAF0041EF1F /* CurrentLevelReviewTimeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481B2FEC23C55AAF0041EF1F /* CurrentLevelReviewTimeItem.swift */; };
 		4820306724D849E100B40FDD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633632EE201F3490006D582B /* Settings.swift */; };
+		48A21BF125254E53007B2E2B /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A21BF025254E53007B2E2B /* UserNotifications.framework */; };
+		48A21BF325254E53007B2E2B /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A21BF225254E53007B2E2B /* UserNotificationsUI.framework */; platformFilter = ios; };
+		48A21BF625254E53007B2E2B /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A21BF525254E53007B2E2B /* NotificationViewController.swift */; };
+		48A21BF925254E53007B2E2B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48A21BF725254E53007B2E2B /* MainInterface.storyboard */; };
+		48A21BFD25254E53007B2E2B /* Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 48A21BEF25254E53007B2E2B /* Widget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		48CF714823EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48CF714623EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m */; };
 		5C82B2908507339A293B0E59 /* Pods_FontScreenshotter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F33812F134DC80E5D981C40E /* Pods_FontScreenshotter.framework */; };
 		630ADB6F21F8256E00BC9801 /* TKMCheckmarkModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 630ADB6E21F8256E00BC9801 /* TKMCheckmarkModelItem.m */; };
@@ -140,6 +145,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		48A21BFB25254E53007B2E2B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630FD60B1FC45BDF00D21C1F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 48A21BEE25254E53007B2E2B;
+			remoteInfo = Widget;
+		};
 		6335B46723CF0C820071671E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 630FD60B1FC45BDF00D21C1F /* Project object */;
@@ -178,6 +190,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		48A21BFE25254E53007B2E2B /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				48A21BFD25254E53007B2E2B /* Widget.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C90846C9237F1C790068A272 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -218,6 +241,13 @@
 		4826740B23ECE46900F704E4 /* TKMReviewBatchSizeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TKMReviewBatchSizeViewController.h; sourceTree = "<group>"; };
 		487445A724D9BA10009CE30A /* ProtobufExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProtobufExtensions.h; sourceTree = "<group>"; };
 		489894D423670CB000A20AF8 /* Tsurukame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tsurukame.entitlements; sourceTree = "<group>"; };
+		48A21BEF25254E53007B2E2B /* Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Widget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		48A21BF025254E53007B2E2B /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		48A21BF225254E53007B2E2B /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
+		48A21BF525254E53007B2E2B /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
+		48A21BF825254E53007B2E2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		48A21BFA25254E53007B2E2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		48A21C1A25254F5A007B2E2B /* Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Widget.entitlements; sourceTree = "<group>"; };
 		48CF714623EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TKMReviewBatchSizeViewController.m; sourceTree = "<group>"; };
 		4B8236EC341CF1BA18D16857 /* Pods-Tsurukame-Tsurukame Complication Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tsurukame-Tsurukame Complication Extension.release.xcconfig"; path = "Target Support Files/Pods-Tsurukame-Tsurukame Complication Extension/Pods-Tsurukame-Tsurukame Complication Extension.release.xcconfig"; sourceTree = "<group>"; };
 		568C3CC1B10EB467FE18C0D8 /* Pods_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -397,6 +427,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		48A21BEC25254E53007B2E2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				48A21BF325254E53007B2E2B /* UserNotificationsUI.framework in Frameworks */,
+				48A21BF125254E53007B2E2B /* UserNotifications.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		630FD6101FC45BDF00D21C1F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -488,6 +527,17 @@
 				63D1026823D7ED3200838F7C /* UIWindow+InterfaceStyle.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		48A21BF425254E53007B2E2B /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				48A21C1A25254F5A007B2E2B /* Widget.entitlements */,
+				48A21BF525254E53007B2E2B /* NotificationViewController.swift */,
+				48A21BF725254E53007B2E2B /* MainInterface.storyboard */,
+				48A21BFA25254E53007B2E2B /* Info.plist */,
+			);
+			path = Widget;
 			sourceTree = "<group>";
 		};
 		630FD60A1FC45BDF00D21C1F = {
@@ -604,6 +654,8 @@
 				93B59B292367AF130097533C /* UpcomingReviewsChartItem.swift */,
 				633AFAE52352B6F2004F732F /* VocabularyHighlighter.swift */,
 				C92AB96E237F280300F79904 /* WatchHelper.swift */,
+				48A21BF425254E53007B2E2B /* Widget */,
+				48A21BEF25254E53007B2E2B /* Widget.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -696,6 +748,8 @@
 				568C3CC1B10EB467FE18C0D8 /* Pods_Tests.framework */,
 				1BBBD142815F6A55FA9D2C21 /* libPods-Tsurukame Complication Extension.a */,
 				404461BC39B4A19B128F9E69 /* Pods_FontScreenshotter_FontScreenshotterUITests.framework */,
+				48A21BF025254E53007B2E2B /* UserNotifications.framework */,
+				48A21BF225254E53007B2E2B /* UserNotificationsUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -760,6 +814,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		48A21BEE25254E53007B2E2B /* Widget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 48A21C0125254E53007B2E2B /* Build configuration list for PBXNativeTarget "Widget" */;
+			buildPhases = (
+				48A21BEB25254E53007B2E2B /* Sources */,
+				48A21BEC25254E53007B2E2B /* Frameworks */,
+				48A21BED25254E53007B2E2B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Widget;
+			productName = Widget;
+			productReference = 48A21BEF25254E53007B2E2B /* Widget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		630FD6121FC45BDF00D21C1F /* Tsurukame */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 630FD6291FC45BDF00D21C1F /* Build configuration list for PBXNativeTarget "Tsurukame" */;
@@ -771,11 +842,13 @@
 				630FD6111FC45BDF00D21C1F /* Resources */,
 				7404D0441EE7B558D48508DB /* [CP] Embed Pods Frameworks */,
 				C90846C9237F1C790068A272 /* Embed Watch Content */,
+				48A21BFE25254E53007B2E2B /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				C90846C7237F1C790068A272 /* PBXTargetDependency */,
+				48A21BFC25254E53007B2E2B /* PBXTargetDependency */,
 			);
 			name = Tsurukame;
 			packageProductDependencies = (
@@ -906,6 +979,9 @@
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "David Sansome";
 				TargetAttributes = {
+					48A21BEE25254E53007B2E2B = {
+						CreatedOnToolsVersion = 12.0.1;
+					};
 					630FD6121FC45BDF00D21C1F = {
 						CreatedOnToolsVersion = 9.1;
 						LastSwiftMigration = 0920;
@@ -967,11 +1043,20 @@
 				C90846AB237F1C770068A272 /* Tsurukame Complication */,
 				C90846B7237F1C790068A272 /* Tsurukame Complication Extension */,
 				6335B46123CF0C820071671E /* AppStoreScreenshots */,
+				48A21BEE25254E53007B2E2B /* Widget */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		48A21BED25254E53007B2E2B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				48A21BF925254E53007B2E2B /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		630FD6111FC45BDF00D21C1F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1199,6 +1284,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		48A21BEB25254E53007B2E2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				48A21BF625254E53007B2E2B /* NotificationViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		630FD60F1FC45BDF00D21C1F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1349,6 +1442,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		48A21BFC25254E53007B2E2B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 48A21BEE25254E53007B2E2B /* Widget */;
+			targetProxy = 48A21BFB25254E53007B2E2B /* PBXContainerItemProxy */;
+		};
 		6335B46823CF0C820071671E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 630FD6121FC45BDF00D21C1F /* Tsurukame */;
@@ -1378,6 +1476,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		48A21BF725254E53007B2E2B /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				48A21BF825254E53007B2E2B /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		63C42A2E21B6A290008CA938 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1397,6 +1503,66 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		48A21BFF25254E53007B2E2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = Widget/Widget.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SJ87WGCZM7;
+				INFOPLIST_FILE = Widget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidsansome.wanikani.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		48A21C0025254E53007B2E2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = Widget/Widget.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SJ87WGCZM7;
+				INFOPLIST_FILE = Widget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.davidsansome.wanikani.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		630FD6271FC45BDF00D21C1F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1522,6 +1688,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 34E86AD95515CD815B3086D0 /* Pods-Tsurukame.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/Tsurukame.entitlements;
@@ -1556,6 +1723,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 21894D9E0883B0107075DD6F /* Pods-Tsurukame.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/Tsurukame.entitlements;
@@ -1910,6 +2078,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		48A21C0125254E53007B2E2B /* Build configuration list for PBXNativeTarget "Widget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				48A21BFF25254E53007B2E2B /* Debug */,
+				48A21C0025254E53007B2E2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		630FD60E1FC45BDF00D21C1F /* Build configuration list for PBXProject "Tsurukame" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
