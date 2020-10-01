@@ -27,5 +27,16 @@ class NotificationViewController: UIViewController, NCWidgetProviding {
   override func viewWillAppear(_: Bool) {
     updateWidget()
     print("This function actually ran!")
+    extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+  }
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    updateWidget()
+  }
+  
+  func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+    let expanded = activeDisplayMode == .expanded
+    preferredContentSize = expanded ? CGSize(width: maxSize.width, height: 200) : maxSize
   }
 }
