@@ -16,7 +16,7 @@ import NotificationCenter
 import UIKit
 
 class NotificationViewController: UIViewController, NCWidgetProviding {
-  @IBOutlet var label: UILabel?
+  @IBOutlet var reviewLabel: UILabel!
 
   func updateWidget() {}
 
@@ -26,5 +26,6 @@ class NotificationViewController: UIViewController, NCWidgetProviding {
 
   override func viewWillAppear(_: Bool) {
     updateWidget()
+    print("This function actually ran!")
   }
 }
