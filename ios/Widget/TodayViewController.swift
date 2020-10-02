@@ -14,11 +14,16 @@
 
 import NotificationCenter
 import UIKit
+import WKDataFramework
 
-class NotificationViewController: UIViewController, NCWidgetProviding {
+class TodayViewController: UIViewController, NCWidgetProviding {
   @IBOutlet var reviewLabel: UILabel!
 
-  func updateWidget() {}
+  func updateWidget() {
+    let data = WidgetHelper.readGroupData()
+    NSLog("%@%@%@", data.lessons, data.reviews, data.reviewForecast)
+    reviewLabel.text = String(data.reviews)
+  }
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -26,16 +31,17 @@ class NotificationViewController: UIViewController, NCWidgetProviding {
 
   override func viewWillAppear(_: Bool) {
     updateWidget()
-    print("This function actually ran!")
     extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+    NSLog("View will appear...")
   }
-  
+
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     updateWidget()
   }
-  
-  func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+
+  func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode,
+                                        withMaximumSize maxSize: CGSize) {
     let expanded = activeDisplayMode == .expanded
     preferredContentSize = expanded ? CGSize(width: maxSize.width, height: 200) : maxSize
   }

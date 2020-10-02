@@ -14,7 +14,7 @@
 		481B2FED23C55AAF0041EF1F /* CurrentLevelReviewTimeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481B2FEC23C55AAF0041EF1F /* CurrentLevelReviewTimeItem.swift */; };
 		4820306724D849E100B40FDD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633632EE201F3490006D582B /* Settings.swift */; };
 		48519E95252555A30049A3A0 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48519E94252555A30049A3A0 /* NotificationCenter.framework */; };
-		48A21BF625254E53007B2E2B /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A21BF525254E53007B2E2B /* NotificationViewController.swift */; };
+		48A21BF625254E53007B2E2B /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A21BF525254E53007B2E2B /* TodayViewController.swift */; };
 		48A21BF925254E53007B2E2B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48A21BF725254E53007B2E2B /* MainInterface.storyboard */; };
 		48A21BFD25254E53007B2E2B /* Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 48A21BEF25254E53007B2E2B /* Widget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		48CF714823EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48CF714623EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m */; };
@@ -24,6 +24,7 @@
 		48D8B4802526580A000470EE /* WKDataFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48D8B46B252657F2000470EE /* WKDataFramework.framework */; };
 		48D8B4812526580A000470EE /* WKDataFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 48D8B46B252657F2000470EE /* WKDataFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		48D8B48D252660B9000470EE /* WidgetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D8B48C252660B9000470EE /* WidgetHelper.swift */; };
+		48D8B59D2526A17B000470EE /* WidgetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D8B48C252660B9000470EE /* WidgetHelper.swift */; };
 		5C82B2908507339A293B0E59 /* Pods_FontScreenshotter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F33812F134DC80E5D981C40E /* Pods_FontScreenshotter.framework */; };
 		630ADB6F21F8256E00BC9801 /* TKMCheckmarkModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 630ADB6E21F8256E00BC9801 /* TKMCheckmarkModelItem.m */; };
 		6319C9A0204015B900C31F87 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 6319C99F204015B900C31F87 /* NSString+MD5.m */; };
@@ -286,7 +287,7 @@
 		48A21BEF25254E53007B2E2B /* Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Widget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		48A21BF025254E53007B2E2B /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		48A21BF225254E53007B2E2B /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
-		48A21BF525254E53007B2E2B /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
+		48A21BF525254E53007B2E2B /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		48A21BF825254E53007B2E2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		48A21BFA25254E53007B2E2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		48A21C1A25254F5A007B2E2B /* Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Widget.entitlements; sourceTree = "<group>"; };
@@ -587,7 +588,7 @@
 			isa = PBXGroup;
 			children = (
 				48A21C1A25254F5A007B2E2B /* Widget.entitlements */,
-				48A21BF525254E53007B2E2B /* NotificationViewController.swift */,
+				48A21BF525254E53007B2E2B /* TodayViewController.swift */,
 				48A21BF725254E53007B2E2B /* MainInterface.storyboard */,
 				48A21BFA25254E53007B2E2B /* Info.plist */,
 			);
@@ -1399,7 +1400,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				48A21BF625254E53007B2E2B /* NotificationViewController.swift in Sources */,
+				48A21BF625254E53007B2E2B /* TodayViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1432,6 +1433,7 @@
 				63F7F51F23D3F335006A31FB /* ReadingModelItem.swift in Sources */,
 				633DE9322094D22800AC25F4 /* ReviewOrderViewController.m in Sources */,
 				633AFAE62352B6F2004F732F /* VocabularyHighlighter.swift in Sources */,
+				48D8B59D2526A17B000470EE /* WidgetHelper.swift in Sources */,
 				631CAD63234AD5FC008CEA73 /* AnswerChecker.swift in Sources */,
 				6335B4E723CF14280071671E /* Screenshotter.swift in Sources */,
 				63CAAB091FD2C66100E09DA1 /* NSString+LevenshteinDistance.m in Sources */,
@@ -1711,7 +1713,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = WKDataFramework/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1748,7 +1750,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = WKDataFramework/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1805,6 +1807,7 @@
 				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1868,6 +1871,7 @@
 				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
