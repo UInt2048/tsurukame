@@ -73,7 +73,7 @@ struct WidgetExtensionEntryView: View {
       WidgetExtensionEntryView(entry: entry)
     }
     .configurationDisplayName("Tsurukame Widget")
-    .description("Displays lessons, reviews, and forecast!")
+    .description("Displays lessons, reviews, and forecast! \(WidgetHelper.readGroupData().reviews)")
   }
 }
 

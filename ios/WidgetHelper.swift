@@ -64,8 +64,9 @@ public class WidgetHelper {
   }
 
   public static func updateData(_ data: inout WidgetData, _ updateDate: Date) {
-    let calendar = Calendar(identifier: .gregorian),
-      entryDate = calendar.dateComponents([.year, .month, .day, .hour], from: updateDate).date!
+    let _hour = Calendar.current.dateComponents([.hour], from: updateDate).hour!,
+      entryDate = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0,
+                                        of: updateDate)!
     while data.date < entryDate {
       data.reviews += data.reviewForecast.removeFirst()
       data.date += 3600
