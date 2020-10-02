@@ -20,9 +20,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
   func updateWidget() {
     print("Attempting to update widget")
-    // let data = WidgetHelper.updateData(WidgetHelper.readGroupData(), Date())
-    // reviewLabel.text = "\(data.lessons) / \(data.reviews)"
-    reviewLabel.text = "0/0"
+    let data = WidgetHelper.updateData(WidgetHelper.readGroupData(), Date())
+    reviewLabel.text = "\(data.lessons) / \(data.reviews)"
   }
 
   override func viewDidLoad() {

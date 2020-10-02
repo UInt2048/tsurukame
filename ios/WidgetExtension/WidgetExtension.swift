@@ -16,38 +16,34 @@ import Intents
 import SwiftUI
 import WidgetKit
 
-struct Provider: IntentTimelineProvider {
+struct WidgetDataProvider: TimelineProvider {
   fileprivate static func getData(_ date: Date) -> WidgetData {
     WidgetHelper.updateData(WidgetHelper.readGroupData(), date)
   }
 
-  func placeholder(in _: Context) -> SimpleEntry {
-    SimpleEntry(date: Date(), data: Provider.getData(Date()), configuration: ConfigurationIntent())
+  func placeholder(in _: Context) -> WidgetExtensionEntry {
+    WidgetExtensionEntry(date: Date(), data: WidgetDataProvider.getData(Date()))
   }
 
-  func getSnapshot(for configuration: ConfigurationIntent, in _: Context,
-                   completion: @escaping (SimpleEntry) -> Void) {
-    let entry = SimpleEntry(date: Date(), data: Provider.getData(Date()),
-                            configuration: configuration)
+  func getSnapshot(in _: Context, completion: @escaping (WidgetExtensionEntry) -> Void) {
+    let entry = WidgetExtensionEntry(date: Date(), data: WidgetDataProvider.getData(Date()))
     completion(entry)
   }
 
-  func getTimeline(for configuration: ConfigurationIntent, in _: Context,
-                   completion: @escaping (Timeline<Entry>) -> Void) {
-    var entries: [SimpleEntry] = []
+  func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    var entries: [WidgetExtensionEntry] = []
 
     // Generate a timeline consisting of now and 24 entries an hour apart.
     let currentDate = Date()
     entries
-      .append(SimpleEntry(date: currentDate, data: Provider.getData(currentDate),
-                          configuration: configuration))
+      .append(WidgetExtensionEntry(date: currentDate,
+                                   data: WidgetDataProvider.getData(currentDate)))
     for hourOffset in 1 ... 24 {
       let _hour = Calendar.current.dateComponents([.hour], from: currentDate).hour!
       var entryDate = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0,
                                             of: currentDate)!
       entryDate += Double(3600 * hourOffset)
-      let entry = SimpleEntry(date: entryDate, data: Provider.getData(entryDate),
-                              configuration: configuration)
+      let entry = WidgetExtensionEntry(date: entryDate, data: WidgetDataProvider.getData(entryDate))
       entries.append(entry)
     }
 
@@ -56,38 +52,54 @@ struct Provider: IntentTimelineProvider {
   }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct WidgetExtensionEntry: TimelineEntry {
   let date: Date
   let data: WidgetData
-  let configuration: ConfigurationIntent
 }
 
 struct WidgetExtensionEntryView: View {
-  var entry: Provider.Entry
+  var entry: WidgetDataProvider.Entry
 
   var body: some View {
-    Text("\(entry.data.lessons) / \(entry.data.reviews)")
+    VStack(alignment: .leading) {
+      Spacer()
+      Text("\(entry.data.lessons), \(entry.data.reviews)")
+        .font(.largeTitle)
+        .bold()
+        .padding(.bottom, 20)
+        .padding(.leading, 20)
+        .padding(.trailing, 20)
+        .minimumScaleFactor(0.5)
+        .foregroundColor(.white)
+        .shadow(color: Color.black,
+                radius: 1.0,
+                x: CGFloat(4),
+                y: CGFloat(4))
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .edgesIgnoringSafeArea(.all)
+    .background(Image("launch_screen")
+      .resizable()
+      .scaledToFill())
   }
 }
 
 @main struct WidgetExtension: Widget {
-  let kind: String = "WidgetExtension"
-
   var body: some WidgetConfiguration {
-    IntentConfiguration(kind: kind, intent: ConfigurationIntent.self,
-                        provider: Provider()) { entry in
+    StaticConfiguration(kind: "com.matthewbenedict.wanikani.Widget-Extension",
+                        provider: WidgetDataProvider()) { entry in
       WidgetExtensionEntryView(entry: entry)
     }
     .configurationDisplayName("Tsurukame Widget")
     .description("Displays lessons, reviews, and forecast!")
+    .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
   }
 }
 
 struct WidgetExtension_Previews: PreviewProvider {
   static var previews: some View {
-    WidgetExtensionEntryView(entry: SimpleEntry(date: Date(),
-                                                data: Provider.getData(Date()),
-                                                configuration: ConfigurationIntent()))
+    WidgetExtensionEntryView(entry: WidgetExtensionEntry(date: Date(),
+                                                         data: WidgetDataProvider.getData(Date())))
       .previewContext(WidgetPreviewContext(family: .systemSmall))
   }
 }

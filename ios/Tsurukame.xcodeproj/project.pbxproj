@@ -20,8 +20,6 @@
 		4868F4C025276CE400B49700 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4801CC8925276A98000EA03D /* SwiftUI.framework */; };
 		4868F4C325276CE400B49700 /* WidgetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4868F4C225276CE400B49700 /* WidgetExtension.swift */; };
 		4868F4C625276CE500B49700 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4868F4C525276CE500B49700 /* Assets.xcassets */; };
-		4868F4C825276CE500B49700 /* WidgetExtension.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 4868F4C425276CE400B49700 /* WidgetExtension.intentdefinition */; };
-		4868F4C925276CE500B49700 /* WidgetExtension.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 4868F4C425276CE400B49700 /* WidgetExtension.intentdefinition */; };
 		4868F4CC25276CE500B49700 /* WidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4868F4BE25276CE400B49700 /* WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		48A21BF625254E53007B2E2B /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A21BF525254E53007B2E2B /* TodayViewController.swift */; };
 		48A21BF925254E53007B2E2B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48A21BF725254E53007B2E2B /* MainInterface.storyboard */; };
@@ -271,7 +269,6 @@
 		48519E94252555A30049A3A0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		4868F4BE25276CE400B49700 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4868F4C225276CE400B49700 /* WidgetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetExtension.swift; sourceTree = "<group>"; };
-		4868F4C425276CE400B49700 /* WidgetExtension.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = WidgetExtension.intentdefinition; sourceTree = "<group>"; };
 		4868F4C525276CE500B49700 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4868F4C725276CE500B49700 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4868F4CD25276CE500B49700 /* WidgetExtensionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetExtensionExtension.entitlements; sourceTree = "<group>"; };
@@ -578,7 +575,6 @@
 			isa = PBXGroup;
 			children = (
 				4868F4C225276CE400B49700 /* WidgetExtension.swift */,
-				4868F4C425276CE400B49700 /* WidgetExtension.intentdefinition */,
 				4868F4C525276CE500B49700 /* Assets.xcassets */,
 				4868F4C725276CE500B49700 /* Info.plist */,
 			);
@@ -1381,7 +1377,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4868F4C825276CE500B49700 /* WidgetExtension.intentdefinition in Sources */,
 				4868F4C325276CE400B49700 /* WidgetExtension.swift in Sources */,
 				483070C325276D3400150CF8 /* WidgetHelper.swift in Sources */,
 			);
@@ -1468,7 +1463,6 @@
 				633DE95720C5634A00AC25F4 /* TKMBasicModelItem.m in Sources */,
 				63F7F52123D3F36E006A31FB /* AttributedModelItem.swift in Sources */,
 				631CAD6F234B3B8D008CEA73 /* LevelTimeRemainingItem.swift in Sources */,
-				4868F4C925276CE500B49700 /* WidgetExtension.intentdefinition in Sources */,
 				6319C9A0204015B900C31F87 /* NSString+MD5.m in Sources */,
 				633DE95D20C5635A00AC25F4 /* TKMKanaInput.m in Sources */,
 				635D0079218D94AA006CD711 /* TKMGradientView.m in Sources */,
