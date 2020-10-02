@@ -31,11 +31,14 @@ struct Provider: IntentTimelineProvider {
                    completion: @escaping (Timeline<Entry>) -> Void) {
     var entries: [SimpleEntry] = []
 
-    // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+    // Generate a timeline consisting of now and 24 entries an hour apart.
     let currentDate = Date()
-    for hourOffset in 0 ..< 5 {
-      let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset,
-                                            to: currentDate)!
+    entries.append(SimpleEntry(date: currentDate, configuration: configuration))
+    for hourOffset in 1 ... 24 {
+      let _hour = Calendar.current.dateComponents([.hour], from: currentDate).hour!
+      var entryDate = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0,
+                                            of: currentDate)!
+      entryDate += Double(3600 * hourOffset)
       let entry = SimpleEntry(date: entryDate, configuration: configuration)
       entries.append(entry)
     }
@@ -54,12 +57,14 @@ struct WidgetExtensionEntryView: View {
   var entry: Provider.Entry
 
   var body: some View {
-    Text(entry.date, style: .time)
+    var data = WidgetHelper.readGroupData()
+    WidgetHelper.updateData(&data, entry.date)
+    let text = Text("\(data.lessons) / \(data.reviews)")
+    return text
   }
 }
 
-@main
-struct WidgetExtension: Widget {
+@main struct WidgetExtension: Widget {
   let kind: String = "WidgetExtension"
 
   var body: some WidgetConfiguration {
@@ -67,8 +72,8 @@ struct WidgetExtension: Widget {
                         provider: Provider()) { entry in
       WidgetExtensionEntryView(entry: entry)
     }
-    .configurationDisplayName("My Widget")
-    .description("This is an example widget.")
+    .configurationDisplayName("Tsurukame Widget")
+    .description("Displays lessons, reviews, and forecast!")
   }
 }
 

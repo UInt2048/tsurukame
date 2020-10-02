@@ -13,11 +13,15 @@
 // limitations under the License.
 
 import Foundation
+#if canImport(WidgetKit)
+  import WidgetKit
+#endif
 
 public struct WidgetData: Codable {
   public var lessons: Int
   public var reviews: Int
   public var reviewForecast: [Int]
+  public var date: Date
 }
 
 public enum AppGroup: String {
@@ -36,16 +40,35 @@ public class WidgetHelper {
     .appendingPathComponent("WidgetData.plist")
   public static func readGroupData() -> WidgetData {
     if let xml = FileManager.default.contents(atPath: dataURL.absoluteString),
-      let preferences = try? PropertyListDecoder().decode(WidgetData.self, from: xml) {
-      return preferences
+      let widgetData = try? PropertyListDecoder().decode(WidgetData.self, from: xml) {
+      print("Data read: \(widgetData)")
+      return widgetData
     }
     fatalError("Reading property list failed.")
   }
 
   public static func writeGroupData(_ lessons: Int, _ reviews: Int, _ reviewForecast: [Int]) {
-    let data = WidgetData(lessons: lessons, reviews: reviews, reviewForecast: reviewForecast)
+    let _date = Date(),
+      _hour = Calendar.current.dateComponents([.hour], from: _date).hour!,
+      date = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0, of: _date)!
+    let data = WidgetData(lessons: lessons, reviews: reviews, reviewForecast: reviewForecast,
+                          date: date)
     let encoder = PropertyListEncoder()
     encoder.outputFormat = .xml
     try! encoder.encode(data).write(to: dataURL)
+    print("Data written: \(lessons), \(reviews), \(reviewForecast)")
+    if #available(iOS 14.0, macOS 11.0, *) {
+      WidgetCenter.shared.reloadAllTimelines()
+      print("Reloaded timeline!")
+    }
+  }
+
+  public static func updateData(_ data: inout WidgetData, _ updateDate: Date) {
+    let calendar = Calendar(identifier: .gregorian),
+      entryDate = calendar.dateComponents([.year, .month, .day, .hour], from: updateDate).date!
+    while data.date < entryDate {
+      data.reviews += data.reviewForecast.removeFirst()
+      data.date += 3600
+    }
   }
 }
