@@ -17,13 +17,18 @@ import SwiftUI
 import WidgetKit
 
 struct Provider: IntentTimelineProvider {
+  fileprivate static func getData(_ date: Date) -> WidgetData {
+    WidgetHelper.updateData(WidgetHelper.readGroupData(), date)
+  }
+
   func placeholder(in _: Context) -> SimpleEntry {
-    SimpleEntry(date: Date(), configuration: ConfigurationIntent())
+    SimpleEntry(date: Date(), data: Provider.getData(Date()), configuration: ConfigurationIntent())
   }
 
   func getSnapshot(for configuration: ConfigurationIntent, in _: Context,
                    completion: @escaping (SimpleEntry) -> Void) {
-    let entry = SimpleEntry(date: Date(), configuration: configuration)
+    let entry = SimpleEntry(date: Date(), data: Provider.getData(Date()),
+                            configuration: configuration)
     completion(entry)
   }
 
@@ -33,13 +38,16 @@ struct Provider: IntentTimelineProvider {
 
     // Generate a timeline consisting of now and 24 entries an hour apart.
     let currentDate = Date()
-    entries.append(SimpleEntry(date: currentDate, configuration: configuration))
+    entries
+      .append(SimpleEntry(date: currentDate, data: Provider.getData(currentDate),
+                          configuration: configuration))
     for hourOffset in 1 ... 24 {
       let _hour = Calendar.current.dateComponents([.hour], from: currentDate).hour!
       var entryDate = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0,
                                             of: currentDate)!
       entryDate += Double(3600 * hourOffset)
-      let entry = SimpleEntry(date: entryDate, configuration: configuration)
+      let entry = SimpleEntry(date: entryDate, data: Provider.getData(entryDate),
+                              configuration: configuration)
       entries.append(entry)
     }
 
@@ -50,6 +58,7 @@ struct Provider: IntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
   let date: Date
+  let data: WidgetData
   let configuration: ConfigurationIntent
 }
 
@@ -57,10 +66,7 @@ struct WidgetExtensionEntryView: View {
   var entry: Provider.Entry
 
   var body: some View {
-    var data = WidgetHelper.readGroupData()
-    WidgetHelper.updateData(&data, entry.date)
-    let text = Text("\(data.lessons) / \(data.reviews)")
-    return text
+    Text("\(entry.data.lessons) / \(entry.data.reviews)")
   }
 }
 
@@ -73,13 +79,14 @@ struct WidgetExtensionEntryView: View {
       WidgetExtensionEntryView(entry: entry)
     }
     .configurationDisplayName("Tsurukame Widget")
-    .description("Displays lessons, reviews, and forecast! \(WidgetHelper.readGroupData().reviews)")
+    .description("Displays lessons, reviews, and forecast!")
   }
 }
 
 struct WidgetExtension_Previews: PreviewProvider {
   static var previews: some View {
     WidgetExtensionEntryView(entry: SimpleEntry(date: Date(),
+                                                data: Provider.getData(Date()),
                                                 configuration: ConfigurationIntent()))
       .previewContext(WidgetPreviewContext(family: .systemSmall))
   }

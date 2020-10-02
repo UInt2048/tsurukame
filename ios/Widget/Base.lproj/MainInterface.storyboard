@@ -4,7 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -13,38 +12,38 @@
             <objects>
                 <viewController id="M4Y-Lb-cyx" userLabel="Today View Controller" customClass="TodayViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="37"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="100"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5AM-5a-ttY" userLabel="Review Label">
-                                <rect key="frame" x="20" y="2" width="280" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5AM-5a-ttY" userLabel="Review Label">
+                                <rect key="frame" x="20" y="25" width="280" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="280" id="EUJ-jl-I4z"/>
                                     <constraint firstAttribute="height" constant="20" id="Iwz-r9-Giz"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="hks-nm-nHf"/>
+                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="20" id="rUA-uW-SBS"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="2BE-c3-nQJ"/>
                         <constraints>
-                            <constraint firstItem="2BE-c3-nQJ" firstAttribute="bottom" secondItem="5AM-5a-ttY" secondAttribute="bottom" constant="15" id="Eix-mc-oYp"/>
+                            <constraint firstAttribute="bottom" secondItem="5AM-5a-ttY" secondAttribute="bottom" constant="15" id="Eix-mc-oYp"/>
                             <constraint firstAttribute="trailing" secondItem="5AM-5a-ttY" secondAttribute="trailing" constant="20" symbolic="YES" id="OtT-oO-a3P"/>
                             <constraint firstItem="5AM-5a-ttY" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="20" symbolic="YES" id="h9I-6W-FgL"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="320" height="37"/>
+                    <size key="freeformSize" width="320" height="100"/>
                     <connections>
                         <outlet property="reviewLabel" destination="5AM-5a-ttY" id="a1I-fs-bYa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="140.57971014492756" y="138.95089285714286"/>
+            <point key="canvasLocation" x="140.57971014492756" y="138.61607142857142"/>
         </scene>
     </scenes>
 </document>

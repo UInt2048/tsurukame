@@ -63,13 +63,15 @@ public class WidgetHelper {
     }
   }
 
-  public static func updateData(_ data: inout WidgetData, _ updateDate: Date) {
+  public static func updateData(_ data: WidgetData, _ updateDate: Date) -> WidgetData {
     let _hour = Calendar.current.dateComponents([.hour], from: updateDate).hour!,
       entryDate = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0,
                                         of: updateDate)!
-    while data.date < entryDate {
-      data.reviews += data.reviewForecast.removeFirst()
-      data.date += 3600
+    var workingData = data
+    while workingData.date < entryDate {
+      workingData.reviews += workingData.reviewForecast.removeFirst()
+      workingData.date += 3600
     }
+    return workingData
   }
 }

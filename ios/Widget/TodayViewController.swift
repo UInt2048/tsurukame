@@ -19,19 +19,21 @@ class TodayViewController: UIViewController, NCWidgetProviding {
   @IBOutlet var reviewLabel: UILabel!
 
   func updateWidget() {
-    let data = WidgetHelper.readGroupData()
-    NSLog("%@%@%@", data.lessons, data.reviews, data.reviewForecast)
-    reviewLabel.text = String(data.reviews)
+    print("Attempting to update widget")
+    // let data = WidgetHelper.updateData(WidgetHelper.readGroupData(), Date())
+    // reviewLabel.text = "\(data.lessons) / \(data.reviews)"
+    reviewLabel.text = "0/0"
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    print("Today View widget loaded!")
   }
 
   override func viewWillAppear(_: Bool) {
-    updateWidget()
     extensionContext?.widgetLargestAvailableDisplayMode = .expanded
-    NSLog("View will appear...")
+    print("Today View widget will appear...")
+    updateWidget()
   }
 
   override func viewDidLayoutSubviews() {
