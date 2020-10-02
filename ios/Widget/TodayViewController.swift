@@ -14,7 +14,6 @@
 
 import NotificationCenter
 import UIKit
-import WKDataFramework
 
 class TodayViewController: UIViewController, NCWidgetProviding {
   @IBOutlet var reviewLabel: UILabel!
