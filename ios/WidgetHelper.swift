@@ -38,6 +38,17 @@ public enum AppGroup: String {
 public class WidgetHelper {
   private static let dataURL = AppGroup.wanikani.containerURL
     .appendingPathComponent("WidgetData.plist")
+
+  @available(iOSApplicationExtension 14.0, macCatalyst 14.0, *)
+  public static func reloadTimeline() {
+    #if arch(arm64) || arch(i386) || arch(x86_64) || targetEnvironment(simulator)
+      #if canImport(WidgetKit)
+        WidgetCenter.shared.reloadAllTimelines()
+        print("Reloaded timeline!")
+      #endif
+    #endif
+  }
+
   public static func readGroupData() -> WidgetData {
     if let xml = FileManager.default.contents(atPath: dataURL.absoluteString),
       let widgetData = try? PropertyListDecoder().decode(WidgetData.self, from: xml) {
@@ -57,10 +68,7 @@ public class WidgetHelper {
     encoder.outputFormat = .xml
     try! encoder.encode(data).write(to: dataURL)
     print("Data written: \(lessons), \(reviews), \(reviewForecast)")
-    if #available(iOS 14.0, macOS 11.0, *) {
-      WidgetCenter.shared.reloadAllTimelines()
-      print("Reloaded timeline!")
-    }
+    if #available(iOSApplicationExtension 14.0, macCatalyst 14.0, *) { reloadTimeline() }
   }
 
   public static func updateData(_ data: WidgetData, _ updateDate: Date) -> WidgetData {
