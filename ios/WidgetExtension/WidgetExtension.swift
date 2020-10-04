@@ -86,7 +86,7 @@ struct WidgetExtensionEntryView: View {
 
 @main struct WidgetExtension: Widget {
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: "com.matthewbenedict.wanikani.Widget-Extension",
+    StaticConfiguration(kind: "com.matthewbenedict.wanikani.Tsurukame-Widget-Extension",
                         provider: WidgetDataProvider()) { entry in
       WidgetExtensionEntryView(entry: entry)
     }
