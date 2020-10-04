@@ -50,12 +50,14 @@ public class WidgetHelper {
   }
 
   public static func readGroupData() -> WidgetData {
-    if let xml = FileManager.default.contents(atPath: dataURL.absoluteString),
-      let widgetData = try? PropertyListDecoder().decode(WidgetData.self, from: xml) {
-      print("Data read: \(widgetData)")
-      return widgetData
+    if let xml = FileManager.default.contents(atPath: dataURL.absoluteString) {
+      if let widgetData = try? PropertyListDecoder().decode(WidgetData.self, from: xml) {
+        print("Data read: \(widgetData)")
+        return widgetData
+      }
+      fatalError("Reading property list (at \(dataURL.absoluteString)) failed")
     }
-    fatalError("Reading property list failed.")
+    fatalError("Finding property list (at \(dataURL.absoluteString)) failed")
   }
 
   public static func writeGroupData(_ lessons: Int, _ reviews: Int, _ reviewForecast: [Int]) {
