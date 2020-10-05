@@ -61,26 +61,10 @@ struct WidgetExtensionEntryView: View {
   var entry: WidgetDataProvider.Entry
 
   var body: some View {
-    VStack(alignment: .leading) {
-      Spacer()
-      Text("\(entry.data.lessons), \(entry.data.reviews)")
-        .font(.largeTitle)
-        .bold()
-        .padding(.bottom, 20)
-        .padding(.leading, 20)
-        .padding(.trailing, 20)
-        .minimumScaleFactor(0.5)
-        .foregroundColor(.white)
-        .shadow(color: Color.black,
-                radius: 1.0,
-                x: CGFloat(4),
-                y: CGFloat(4))
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .edgesIgnoringSafeArea(.all)
-    .background(Image("launch_screen")
-      .resizable()
-      .scaledToFill())
+    let formatter = DateFormatter()
+    formatter.dateStyle = .none
+    formatter.timeStyle = .short
+    return Text("\(entry.data.lessons), \(entry.data.reviews)\n\(formatter.string(from: entry.date))")
   }
 }
 
