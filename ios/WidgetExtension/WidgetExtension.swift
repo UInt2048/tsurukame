@@ -60,12 +60,58 @@ struct WidgetExtensionEntry: TimelineEntry {
 
 struct WidgetExtensionEntryView: View {
   var entry: WidgetDataProvider.Entry
+  @Environment(\.widgetFamily) private var widgetFamily
 
-  var body: some View {
+  private func formatTime(time: Date) -> String {
     let formatter = DateFormatter()
     formatter.dateStyle = .none
     formatter.timeStyle = .short
-    return Text("\(entry.data.lessons), \(entry.data.reviews)\n\(formatter.string(from: entry.date))")
+    return formatter.string(from: time)
+  }
+
+  private var lessonReviewSmallBox: some View {
+    VStack {
+      HStack(alignment: /*@START_MENU_TOKEN@*/ .center/*@END_MENU_TOKEN@*/, spacing: 50.0,
+             content: {
+               Text("\(entry.data.lessons)").font(.largeTitle)
+               Text("\(entry.data.reviews)").font(.largeTitle)
+             })
+      HStack(alignment: /*@START_MENU_TOKEN@*/ .center/*@END_MENU_TOKEN@*/, spacing: 30.0,
+             content: {
+               Text("Lessons").font(.subheadline)
+               Text("Reviews").font(.subheadline)
+             })
+      Text(formatTime(time: entry.date))
+    }
+  }
+
+  private var currentDayForecastSmallBox: some View {
+    List(entry.data.reviewForecast, id: \.self) { forecastAmount in
+      Text("\(forecastAmount)")
+    }
+  }
+
+  private var weekForecastMediumBox: some View {
+    List {}
+  }
+
+  var body: some View {
+    if widgetFamily == .systemSmall {
+      lessonReviewSmallBox
+    } else if widgetFamily == .systemMedium {
+      HStack {
+        lessonReviewSmallBox
+        currentDayForecastSmallBox
+      }
+    } else {
+      VStack {
+        HStack {
+          lessonReviewSmallBox
+          currentDayForecastSmallBox
+        }
+        weekForecastMediumBox
+      }
+    }
   }
 }
 
@@ -85,6 +131,6 @@ struct WidgetExtension_Previews: PreviewProvider {
   static var previews: some View {
     WidgetExtensionEntryView(entry: WidgetExtensionEntry(date: Date(),
                                                          data: WidgetDataProvider.getData(Date())))
-      .previewContext(WidgetPreviewContext(family: .systemSmall))
+      .previewContext(WidgetPreviewContext(family: .systemLarge))
   }
 }
