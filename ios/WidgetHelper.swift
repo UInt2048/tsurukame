@@ -39,7 +39,7 @@ public class WidgetHelper {
   private static let dataURL = AppGroup.wanikani.containerURL
     .appendingPathComponent("WidgetData.plist")
 
-  @available(iOSApplicationExtension 14.0, macCatalyst 14.0, *)
+  @available(iOS 14.0, iOSApplicationExtension 14.0, macCatalyst 14.0, *)
   public static func reloadTimeline() {
     #if arch(arm64) || arch(i386) || arch(x86_64) || targetEnvironment(simulator)
       #if canImport(WidgetKit)
@@ -49,7 +49,7 @@ public class WidgetHelper {
     #endif
   }
 
-  public static func readGroupData() -> WidgetData {
+  public static func readGroupData() -> WidgetData? {
     if let xml = FileManager.default.contents(atPath: dataURL.absoluteString) {
       if let widgetData = try? PropertyListDecoder().decode(WidgetData.self, from: xml) {
         print("Data read: \(widgetData)")
@@ -57,7 +57,8 @@ public class WidgetHelper {
       }
       fatalError("Reading property list (at \(dataURL.absoluteString)) failed")
     }
-    fatalError("Finding property list (at \(dataURL.absoluteString)) failed")
+    print("Finding property list (at \(dataURL.absoluteString)) failed")
+    return nil
   }
 
   public static func writeGroupData(_ lessons: Int, _ reviews: Int, _ reviewForecast: [Int]) {
@@ -70,7 +71,7 @@ public class WidgetHelper {
     encoder.outputFormat = .xml
     try! encoder.encode(data).write(to: dataURL)
     print("Data written: \(lessons), \(reviews), \(reviewForecast)")
-    if #available(iOSApplicationExtension 14.0, macCatalyst 14.0, *) { reloadTimeline() }
+    if #available(iOS 14.0, iOSApplicationExtension 14.0, macCatalyst 14.0, *) { reloadTimeline() }
   }
 
   public static func updateData(_ data: WidgetData, _ updateDate: Date) -> WidgetData {
@@ -79,7 +80,9 @@ public class WidgetHelper {
                                         of: updateDate)!
     var workingData = data
     while workingData.date < entryDate {
-      workingData.reviews += workingData.reviewForecast.removeFirst()
+      if workingData.reviewForecast.count > 0 {
+        workingData.reviews += workingData.reviewForecast.removeFirst()
+      }
       workingData.date += 3600
     }
     return workingData

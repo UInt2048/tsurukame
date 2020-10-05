@@ -18,7 +18,8 @@ import WidgetKit
 
 struct WidgetDataProvider: TimelineProvider {
   fileprivate static func getData(_ date: Date) -> WidgetData {
-    WidgetHelper.updateData(WidgetHelper.readGroupData(), date)
+    let dataNotFound = WidgetData(lessons: -1, reviews: -1, reviewForecast: [], date: Date())
+    return WidgetHelper.updateData(WidgetHelper.readGroupData() ?? dataNotFound, date)
   }
 
   func placeholder(in _: Context) -> WidgetExtensionEntry {
