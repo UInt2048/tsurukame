@@ -20,8 +20,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
   func updateWidget() {
     print("Attempting to update widget")
-    let dataNotFound = WidgetData(lessons: -1, reviews: -1, reviewForecast: [], date: Date())
-    let data = WidgetHelper.updateData(WidgetHelper.readGroupData() ?? dataNotFound, Date())
+    let data = WidgetHelper.readProjectedData(Date())
     reviewLabel.text = "\(data.lessons) / \(data.reviews)"
   }
 

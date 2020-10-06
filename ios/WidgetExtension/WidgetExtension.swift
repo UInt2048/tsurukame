@@ -17,17 +17,16 @@ import SwiftUI
 import WidgetKit
 
 struct WidgetDataProvider: TimelineProvider {
-  fileprivate static func getData(_ date: Date) -> WidgetData {
-    let dataNotFound = WidgetData(lessons: -1, reviews: -1, reviewForecast: [], date: Date())
-    return WidgetHelper.updateData(WidgetHelper.readGroupData() ?? dataNotFound, date)
+  fileprivate func getData(_ date: Date) -> ExpandedWidgetData {
+    WidgetHelper.readProjectedData(date)
   }
 
   func placeholder(in _: Context) -> WidgetExtensionEntry {
-    WidgetExtensionEntry(date: Date(), data: WidgetDataProvider.getData(Date()))
+    WidgetExtensionEntry(date: Date(), data: getData(Date()))
   }
 
   func getSnapshot(in _: Context, completion: @escaping (WidgetExtensionEntry) -> Void) {
-    let entry = WidgetExtensionEntry(date: Date(), data: WidgetDataProvider.getData(Date()))
+    let entry = WidgetExtensionEntry(date: Date(), data: getData(Date()))
     completion(entry)
   }
 
@@ -36,15 +35,13 @@ struct WidgetDataProvider: TimelineProvider {
 
     // Generate a timeline consisting of now and 24 entries an hour apart.
     let currentDate = Date()
-    entries
-      .append(WidgetExtensionEntry(date: currentDate,
-                                   data: WidgetDataProvider.getData(currentDate)))
+    entries.append(WidgetExtensionEntry(date: currentDate, data: getData(currentDate)))
     for hourOffset in 1 ... 24 {
       let _hour = Calendar.current.dateComponents([.hour], from: currentDate).hour!
       var entryDate = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0,
                                             of: currentDate)!
       entryDate += Double(3600 * hourOffset)
-      let entry = WidgetExtensionEntry(date: entryDate, data: WidgetDataProvider.getData(entryDate))
+      let entry = WidgetExtensionEntry(date: entryDate, data: getData(entryDate))
       entries.append(entry)
     }
 
@@ -55,7 +52,7 @@ struct WidgetDataProvider: TimelineProvider {
 
 struct WidgetExtensionEntry: TimelineEntry {
   let date: Date
-  let data: WidgetData
+  let data: ExpandedWidgetData
 }
 
 struct WidgetExtensionEntryView: View {
@@ -71,24 +68,33 @@ struct WidgetExtensionEntryView: View {
 
   private var lessonReviewSmallBox: some View {
     VStack {
-      HStack(alignment: /*@START_MENU_TOKEN@*/ .center/*@END_MENU_TOKEN@*/, spacing: 50.0,
-             content: {
-               Text("\(entry.data.lessons)").font(.largeTitle)
-               Text("\(entry.data.reviews)").font(.largeTitle)
-             })
-      HStack(alignment: /*@START_MENU_TOKEN@*/ .center/*@END_MENU_TOKEN@*/, spacing: 30.0,
-             content: {
-               Text("Lessons").font(.subheadline)
-               Text("Reviews").font(.subheadline)
-             })
+      HStack(alignment: .center, spacing: 50.0) {
+        Text("\(entry.data.lessons)").font(.largeTitle)
+        Text("\(entry.data.reviews)").font(.largeTitle)
+      }
+      HStack(alignment: .center, spacing: 30.0) {
+        Text("Lessons").font(.subheadline)
+        Text("Reviews").font(.subheadline)
+      }
       Text(formatTime(time: entry.date))
     }
   }
 
   private var currentDayForecastSmallBox: some View {
-    List(entry.data.reviewForecast, id: \.self) { forecastAmount in
-      Text("\(forecastAmount)")
+    /*
+     List(entry.data.reviewForecast, id: \.self) { (newReviews: Int) in
+       Text("\(newReviews)")
+     }
+     */
+    VStack(alignment: .center, spacing: 50.0) {
+      ForEach(entry.data.reviewForecast, id: \.self) { forecastEntry in
+        Text("\(forecastEntry.newReviews)")
+      }
     }
+  }
+
+  private var currentDayForecastDefault: some View {
+    Text("No additional reviews today! \u{1F389}")
   }
 
   private var weekForecastMediumBox: some View {
@@ -101,7 +107,11 @@ struct WidgetExtensionEntryView: View {
     } else if widgetFamily == .systemMedium {
       HStack {
         lessonReviewSmallBox
-        currentDayForecastSmallBox
+        if entry.data.reviewForecast.count > 0 {
+          currentDayForecastSmallBox
+        } else {
+          currentDayForecastDefault
+        }
       }
     } else {
       VStack {
@@ -130,7 +140,8 @@ struct WidgetExtensionEntryView: View {
 struct WidgetExtension_Previews: PreviewProvider {
   static var previews: some View {
     WidgetExtensionEntryView(entry: WidgetExtensionEntry(date: Date(),
-                                                         data: WidgetDataProvider.getData(Date())))
-      .previewContext(WidgetPreviewContext(family: .systemLarge))
+                                                         data: WidgetHelper
+                                                           .readProjectedData(Date())))
+      .previewContext(WidgetPreviewContext(family: .systemMedium))
   }
 }
