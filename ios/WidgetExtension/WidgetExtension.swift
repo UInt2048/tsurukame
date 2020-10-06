@@ -59,11 +59,24 @@ struct WidgetExtensionEntryView: View {
   var entry: WidgetDataProvider.Entry
   @Environment(\.widgetFamily) private var widgetFamily
 
-  private func formatTime(time: Date) -> String {
+  private func formatTime(_ time: Date) -> String {
     let formatter = DateFormatter()
     formatter.dateStyle = .none
     formatter.timeStyle = .short
     return formatter.string(from: time)
+  }
+
+  private func formatDate(_ date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .full
+    formatter.timeStyle = .none
+    return formatter.string(from: date)
+  }
+
+  private func dayOfWeek(_ date: Date) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "EEEE"
+    return dateFormatter.string(from: date).capitalized
   }
 
   private var lessonReviewSmallBox: some View {
@@ -76,19 +89,47 @@ struct WidgetExtensionEntryView: View {
         Text("Lessons").font(.subheadline)
         Text("Reviews").font(.subheadline)
       }
-      Text(formatTime(time: entry.date))
+      Text(formatTime(entry.date))
     }
   }
 
+  private var threeColumnLayout: [GridItem] {
+    // GridItem(spacing: 0), GridItem(spacing: 0), GridItem(spacing: 0)
+    [GridItem(.fixed(50)),
+     GridItem(.fixed(30)),
+     GridItem(.fixed(30))]
+  }
+
+  private var eightColumnLayout: [GridItem] {
+    // GridItem(spacing: 0), GridItem(spacing: 0), GridItem(spacing: 0)
+    [GridItem(.fixed(50)),
+     GridItem(.fixed(30)),
+     GridItem(.fixed(30)),
+     GridItem(.fixed(30)),
+     GridItem(.fixed(30)),
+     GridItem(.fixed(30)),
+     GridItem(.fixed(30)),
+     GridItem(.fixed(30))]
+  }
+
+  private var truncatedForecast: ReviewForecast {
+    var workingForecast: ReviewForecast = []
+    for forecastEntry in entry.data.reviewForecast {
+      if formatDate(forecastEntry.date) == formatDate(entry.date) {
+        workingForecast.append(forecastEntry)
+      }
+    }
+    return workingForecast
+  }
+
   private var currentDayForecastSmallBox: some View {
-    /*
-     List(entry.data.reviewForecast, id: \.self) { (newReviews: Int) in
-       Text("\(newReviews)")
-     }
-     */
-    VStack(alignment: .center, spacing: 50.0) {
-      ForEach(entry.data.reviewForecast, id: \.self) { forecastEntry in
-        Text("\(forecastEntry.newReviews)")
+    LazyVGrid(columns: threeColumnLayout) {
+      ForEach(truncatedForecast, id: \.self) { forecastEntry in
+        if forecastEntry.newReviews != 0 {
+          Text(formatTime(forecastEntry.date)).font(.caption2)
+          Text("+\(forecastEntry.newReviews)").font(.caption2)
+          Text("\(forecastEntry.totalReviews)").font(.caption2)
+        }
       }
     }
   }
@@ -98,7 +139,15 @@ struct WidgetExtensionEntryView: View {
   }
 
   private var weekForecastMediumBox: some View {
-    List {}
+    LazyVGrid(columns: eightColumnLayout) {
+      ForEach(entry.data.reviewForecast, id: \.self) { forecastEntry in
+        if forecastEntry.newReviews != 0 {
+          Text(dayOfWeek(forecastEntry.date)).font(.caption2)
+          Text("+\(forecastEntry.newReviews)").font(.caption2)
+          Text("\(forecastEntry.totalReviews)").font(.caption2)
+        }
+      }
+    }
   }
 
   var body: some View {
@@ -107,11 +156,9 @@ struct WidgetExtensionEntryView: View {
     } else if widgetFamily == .systemMedium {
       HStack {
         lessonReviewSmallBox
-        if entry.data.reviewForecast.count > 0 {
-          currentDayForecastSmallBox
-        } else {
-          currentDayForecastDefault
-        }
+        Divider()
+        if entry.data.reviewForecast.count > 0 { currentDayForecastSmallBox }
+        else { currentDayForecastDefault }
       }
     } else {
       VStack {
@@ -119,7 +166,9 @@ struct WidgetExtensionEntryView: View {
           lessonReviewSmallBox
           currentDayForecastSmallBox
         }
+        Divider()
         weekForecastMediumBox
+        Spacer()
       }
     }
   }
@@ -142,6 +191,6 @@ struct WidgetExtension_Previews: PreviewProvider {
     WidgetExtensionEntryView(entry: WidgetExtensionEntry(date: Date(),
                                                          data: WidgetHelper
                                                            .readProjectedData(Date())))
-      .previewContext(WidgetPreviewContext(family: .systemMedium))
+      .previewContext(WidgetPreviewContext(family: .systemLarge))
   }
 }

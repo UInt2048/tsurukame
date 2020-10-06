@@ -86,7 +86,8 @@ public class WidgetHelper {
       d = codedData
     } else {
       print("Reading property list (at \(dataURL.absoluteString)) failed")
-      d = CodedWidgetData(lessons: -1, reviews: -1, reviewForecast: [], date: Date())
+      d = CodedWidgetData(lessons: -1, reviews: -1,
+                          reviewForecast: [5, 4, 0, 42, 69, 8, 3, 100, 43, 6, 0, 44], date: Date())
     }
     return ExpandedWidgetData(lessons: d.lessons, reviews: d.reviews,
                               reviewForecast: generateReviewForecast(widgetData: d),
