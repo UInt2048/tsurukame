@@ -651,8 +651,8 @@ struct ProgressTask {
   int lessons = 0;
   int reviews = 0;
 
-  NSMutableArray<NSNumber *> *upcomingReviews = [NSMutableArray arrayWithCapacity:48];
-  for (int i = 0; i < 24; i++) {
+  NSMutableArray<NSNumber *> *upcomingReviews = [NSMutableArray arrayWithCapacity:336];
+  for (int i = 0; i < 168; i++) {
     [upcomingReviews addObject:@(0)];
   }
 

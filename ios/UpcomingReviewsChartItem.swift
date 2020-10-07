@@ -42,7 +42,7 @@ class UpcomingReviewsChartItem: NSObject, TKMModelItem {
   let date: Date
 
   @objc init(_ upcomingReviews: [Int], currentReviewCount: Int, at date: Date) {
-    self.upcomingReviews = upcomingReviews
+    self.upcomingReviews = Array(upcomingReviews[0 ..< 24])
     self.currentReviewCount = currentReviewCount
     self.date = date
   }
