@@ -36,11 +36,11 @@ struct WidgetDataProvider: TimelineProvider {
     // Generate a timeline consisting of now and 24 entries an hour apart.
     let currentDate = Date()
     entries.append(WidgetExtensionEntry(date: currentDate, data: getData(currentDate)))
+    let zeroOffsetDate = Calendar.current.date(bySettingHour: currentDate.hour, minute: 0,
+                                               second: 0,
+                                               of: currentDate)!
     for hourOffset in 1 ... 24 {
-      let _hour = Calendar.current.dateComponents([.hour], from: currentDate).hour!
-      var entryDate = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0,
-                                            of: currentDate)!
-      entryDate += Double(3600 * hourOffset)
+      let entryDate = zeroOffsetDate + Double(3600 * hourOffset)
       let entry = WidgetExtensionEntry(date: entryDate, data: getData(entryDate))
       entries.append(entry)
     }
@@ -59,26 +59,6 @@ struct WidgetExtensionEntryView: View {
   var entry: WidgetDataProvider.Entry
   @Environment(\.widgetFamily) private var widgetFamily
 
-  private func formatTime(_ time: Date) -> String {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .none
-    formatter.timeStyle = .short
-    return formatter.string(from: time)
-  }
-
-  private func formatDate(_ date: Date) -> String {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .full
-    formatter.timeStyle = .none
-    return formatter.string(from: date)
-  }
-
-  private func dayOfWeek(_ date: Date) -> String {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "EEEE"
-    return dateFormatter.string(from: date).capitalized
-  }
-
   private var lessonReviewSmallBox: some View {
     VStack {
       HStack(alignment: .center, spacing: 50.0) {
@@ -89,47 +69,57 @@ struct WidgetExtensionEntryView: View {
         Text("Lessons").font(.subheadline)
         Text("Reviews").font(.subheadline)
       }
-      Text(formatTime(entry.date))
+      Text(entry.date.time)
     }
   }
 
-  private var threeColumnLayout: [GridItem] {
-    // GridItem(spacing: 0), GridItem(spacing: 0), GridItem(spacing: 0)
-    [GridItem(.fixed(50)),
-     GridItem(.fixed(30)),
-     GridItem(.fixed(30))]
-  }
-
-  private var eightColumnLayout: [GridItem] {
-    // GridItem(spacing: 0), GridItem(spacing: 0), GridItem(spacing: 0)
-    [GridItem(.fixed(50)),
-     GridItem(.fixed(30)),
-     GridItem(.fixed(30)),
-     GridItem(.fixed(30)),
-     GridItem(.fixed(30)),
-     GridItem(.fixed(30)),
-     GridItem(.fixed(30)),
-     GridItem(.fixed(30))]
-  }
-
-  private var truncatedForecast: ReviewForecast {
-    var workingForecast: ReviewForecast = []
-    for forecastEntry in entry.data.reviewForecast {
-      if formatDate(forecastEntry.date) == formatDate(entry.date) {
-        workingForecast.append(forecastEntry)
-      }
+  private func gridLayout(columns: Int, spacing: CGFloat = 30,
+                          _ bonusFirst: CGFloat = 20,
+                          _ bonusLast: CGFloat = 0) -> [GridItem] {
+    var items = Array(repeating: GridItem(.fixed(spacing)), count: columns)
+    items[0].size = .fixed(spacing + bonusFirst)
+    if columns > 2 {
+      items[items.count - 2].size = .fixed(spacing + bonusLast)
+      items[items.count - 1].size = .fixed(spacing + bonusLast)
     }
-    return workingForecast
+    return items
+  }
+
+  private var forecastSmFont: Font {
+    .system(size: 11, weight: .light, design: .default)
+  }
+
+  private var forecastMedFont: Font {
+    .system(size: 10, weight: .light, design: .monospaced)
   }
 
   private var currentDayForecastSmallBox: some View {
-    LazyVGrid(columns: threeColumnLayout) {
-      ForEach(truncatedForecast, id: \.self) { forecastEntry in
+    LazyVGrid(columns: gridLayout(columns: 3), alignment: .trailing) {
+      ForEach(entry.data.todayForecast(date: entry.date)) { forecastEntry in
         if forecastEntry.newReviews != 0 {
-          Text(formatTime(forecastEntry.date)).font(.caption2)
-          Text("+\(forecastEntry.newReviews)").font(.caption2)
-          Text("\(forecastEntry.totalReviews)").font(.caption2)
+          Text(forecastEntry.date.time).font(forecastSmFont)
+          Text("+\(forecastEntry.newReviews)").font(forecastSmFont)
+          Text("\(forecastEntry.totalReviews)").font(forecastSmFont)
         }
+      }
+    }
+  }
+
+  private var weekForecastMediumBox: some View {
+    LazyVGrid(columns: gridLayout(columns: 10, spacing: 25, -6, 6), alignment: .trailing) {
+      Text("").font(forecastMedFont)
+      ForEach([0, 4, 8, 12, 16, 20, 23], id: \.self) { hour in
+        Text("\(hour)").font(forecastMedFont)
+      }
+      Text("New").font(forecastMedFont)
+      Text("All").font(forecastMedFont)
+      ForEach(entry.data.dailyReviewForecast(date: entry.date)) { dayForecast in
+        Text(dayForecast.dayOfWeek).font(forecastMedFont)
+        ForEach(dayForecast.newReviewForecast, id: \.self) { futureReviews in
+          Text("+\(futureReviews.newReviews)").font(forecastMedFont)
+        }
+        Text("+\(String(dayForecast.newReviews))").font(forecastMedFont)
+        Text("\(String(dayForecast.totalReviews))").font(forecastMedFont)
       }
     }
   }
@@ -138,16 +128,8 @@ struct WidgetExtensionEntryView: View {
     Text("No additional reviews today! \u{1F389}")
   }
 
-  private var weekForecastMediumBox: some View {
-    LazyVGrid(columns: eightColumnLayout) {
-      ForEach(entry.data.reviewForecast, id: \.self) { forecastEntry in
-        if forecastEntry.newReviews != 0 {
-          Text(dayOfWeek(forecastEntry.date)).font(.caption2)
-          Text("+\(forecastEntry.newReviews)").font(.caption2)
-          Text("\(forecastEntry.totalReviews)").font(.caption2)
-        }
-      }
-    }
+  private var weekForecastDefault: some View {
+    Text("No upcoming reviews this week! \u{1F389}")
   }
 
   var body: some View {
@@ -164,7 +146,8 @@ struct WidgetExtensionEntryView: View {
       VStack {
         HStack {
           lessonReviewSmallBox
-          currentDayForecastSmallBox
+          if entry.data.reviewForecast.count > 0 { currentDayForecastSmallBox }
+          else { currentDayForecastDefault }
         }
         Divider()
         weekForecastMediumBox
