@@ -17,9 +17,6 @@ import Foundation
   import WidgetKit
 #endif
 
-public typealias ReviewForecast = [FutureReviewCount]
-public typealias DailyReviewForecast = [FutureDayForecast]
-
 public struct CodedWidgetData: Codable {
   public var lessons: Int
   public var reviews: Int
@@ -30,11 +27,11 @@ public struct CodedWidgetData: Codable {
 public struct ExpandedWidgetData: Codable {
   public var lessons: Int
   public var reviews: Int
-  public var reviewForecast: ReviewForecast
+  public var reviewForecast: [FutureReviewCount]
   public var date: Date
 
-  public func todayForecast(date: Date) -> ReviewForecast {
-    var workingForecast: ReviewForecast = []
+  public func todayForecast(date: Date) -> [FutureReviewCount] {
+    var workingForecast: [FutureReviewCount] = []
     for forecastEntry in reviewForecast {
       if forecastEntry.date.date == date.date {
         workingForecast.append(forecastEntry)
@@ -43,9 +40,9 @@ public struct ExpandedWidgetData: Codable {
     return workingForecast
   }
 
-  public func dailyReviewForecast(date: Date) -> DailyReviewForecast {
+  public func dailyReviewForecast(date: Date) -> [FutureDayForecast] {
     var workingDate = ""
-    var dailyForecast: DailyReviewForecast = []
+    var dailyForecast: [FutureDayForecast] = []
     for forecastEntry in reviewForecast {
       if forecastEntry.date.date == date.date { continue }
       if forecastEntry.date.date != workingDate {
@@ -70,8 +67,8 @@ public struct FutureReviewCount: Codable, Hashable, Identifiable {
 public struct FutureDayForecast: Codable, Hashable, Identifiable {
   public var id = UUID()
   public var dayOfWeek: String
-  private var limitedForecast: ReviewForecast
-  public var newReviewForecast: ReviewForecast {
+  private var limitedForecast: [FutureReviewCount]
+  public var newReviewForecast: [FutureReviewCount] {
     var forecast = limitedForecast
     while forecast.count < 7 {
       let hours = [0, 4, 8, 12, 16, 20, 23]
@@ -146,10 +143,10 @@ public class WidgetHelper {
   private static let dataURL = AppGroup.wanikani.containerURL
     .appendingPathComponent("WidgetData.plist")
 
-  private static func generateReviewForecast(widgetData d: CodedWidgetData) -> ReviewForecast {
+  private static func generateReviewForecast(widgetData d: CodedWidgetData) -> [FutureReviewCount] {
     let _hour = Calendar.current.dateComponents([.hour], from: d.date).hour!,
       initial = Calendar.current.date(bySettingHour: _hour, minute: 0, second: 0, of: d.date)!
-    var workingDate = initial, workingForecast: ReviewForecast = [], workingReviews = d.reviews
+    var workingDate = initial, workingForecast: [FutureReviewCount] = [], workingReviews = d.reviews
     for newReviews in d.reviewForecast {
       workingDate += 3600
       workingReviews += newReviews
@@ -162,11 +159,9 @@ public class WidgetHelper {
 
   @available(iOS 14.0, iOSApplicationExtension 14.0, macCatalyst 14.0, *)
   public static func reloadTimeline() {
-    #if arch(arm64) || arch(i386) || arch(x86_64) || targetEnvironment(simulator)
-      #if canImport(WidgetKit)
-        WidgetCenter.shared.reloadAllTimelines()
-        print("Reloaded timeline!")
-      #endif
+    #if canImport(WidgetKit)
+      WidgetCenter.shared.reloadAllTimelines()
+      print("Reloaded timeline!")
     #endif
   }
 
@@ -306,6 +301,7 @@ public class WidgetHelper {
                                date: date)
     let encoder = PropertyListEncoder()
     encoder.outputFormat = .xml
+    print("Attempting to write to \(dataURL)")
     try! encoder.encode(data).write(to: dataURL)
     print("Data written: \(lessons), \(reviews), \(reviewForecast)")
     if #available(iOS 14.0, iOSApplicationExtension 14.0, macCatalyst 14.0, *) { reloadTimeline() }

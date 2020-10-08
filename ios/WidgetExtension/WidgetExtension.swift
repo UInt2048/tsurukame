@@ -16,6 +16,22 @@ import Intents
 import SwiftUI
 import WidgetKit
 
+private extension Font {
+  static func getFont(size: CGFloat, weight: Font.Weight, monospace: Bool = true) -> Font {
+    if monospace {
+      return Font.system(size: size, weight: weight, design: .default).monospacedDigit()
+    } else {
+      return Font.system(size: size, weight: weight, design: .default)
+    }
+  }
+}
+
+private extension View {
+  func equalSpacedFrame() -> some View {
+    frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+  }
+}
+
 struct WidgetDataProvider: TimelineProvider {
   fileprivate func getData(_ date: Date) -> ExpandedWidgetData {
     WidgetHelper.readProjectedData(date)
@@ -59,54 +75,50 @@ struct WidgetExtensionEntryView: View {
   var entry: WidgetDataProvider.Entry
   @Environment(\.widgetFamily) private var widgetFamily
 
+  private func gridLayout(columns: Int, spacing: CGFloat = 30,
+                          _ bonusFirst: CGFloat = 0,
+                          _ bonusLast2: CGFloat = 0,
+                          _ bonusLast: CGFloat = 0) -> [GridItem] {
+    var items = Array(repeating: GridItem(.fixed(spacing)), count: columns)
+    items[0].size = .fixed(spacing + bonusFirst)
+    if columns > 2 {
+      items[items.count - 2].size = .fixed(spacing + bonusLast2)
+      items[items.count - 1].size = .fixed(spacing + bonusLast)
+    }
+    return items
+  }
+
   private var lessonReviewSmallBox: some View {
     VStack {
       HStack(alignment: .center, spacing: 50.0) {
-        Text("\(entry.data.lessons)").font(.largeTitle)
-        Text("\(entry.data.reviews)").font(.largeTitle)
+        let largeTitle = Font.getFont(size: 34.0, weight: .bold)
+        Text("\(entry.data.lessons)").font(largeTitle)
+        Text("\(entry.data.reviews)").font(largeTitle)
       }
       HStack(alignment: .center, spacing: 30.0) {
         Text("Lessons").font(.subheadline)
         Text("Reviews").font(.subheadline)
       }
       Text(entry.date.time)
-    }
-  }
-
-  private func gridLayout(columns: Int, spacing: CGFloat = 30,
-                          _ bonusFirst: CGFloat = 20,
-                          _ bonusLast: CGFloat = 0) -> [GridItem] {
-    var items = Array(repeating: GridItem(.fixed(spacing)), count: columns)
-    items[0].size = .fixed(spacing + bonusFirst)
-    if columns > 2 {
-      items[items.count - 2].size = .fixed(spacing + bonusLast)
-      items[items.count - 1].size = .fixed(spacing + bonusLast)
-    }
-    return items
-  }
-
-  private var forecastSmFont: Font {
-    .system(size: 11, weight: .light, design: .default)
-  }
-
-  private var forecastMedFont: Font {
-    .system(size: 10, weight: .light, design: .monospaced)
+    }.equalSpacedFrame()
   }
 
   private var currentDayForecastSmallBox: some View {
-    LazyVGrid(columns: gridLayout(columns: 3), alignment: .trailing) {
+    LazyVGrid(columns: gridLayout(columns: 3, spacing: 28, 22.4), alignment: .trailing) {
       ForEach(entry.data.todayForecast(date: entry.date)) { forecastEntry in
         if forecastEntry.newReviews != 0 {
+          let forecastSmFont = Font.getFont(size: 11, weight: .light)
           Text(forecastEntry.date.time).font(forecastSmFont)
           Text("+\(forecastEntry.newReviews)").font(forecastSmFont)
           Text("\(forecastEntry.totalReviews)").font(forecastSmFont)
         }
       }
-    }
+    }.equalSpacedFrame()
   }
 
   private var weekForecastMediumBox: some View {
-    LazyVGrid(columns: gridLayout(columns: 10, spacing: 25, -6, 6), alignment: .trailing) {
+    LazyVGrid(columns: gridLayout(columns: 10, spacing: 25.5, -4.8, 6.3), alignment: .trailing) {
+      let forecastMedFont = Font.getFont(size: 10, weight: .light)
       Text("").font(forecastMedFont)
       ForEach([0, 4, 8, 12, 16, 20, 23], id: \.self) { hour in
         Text("\(hour)").font(forecastMedFont)
@@ -121,15 +133,15 @@ struct WidgetExtensionEntryView: View {
         Text("+\(String(dayForecast.newReviews))").font(forecastMedFont)
         Text("\(String(dayForecast.totalReviews))").font(forecastMedFont)
       }
-    }
+    }.equalSpacedFrame()
   }
 
   private var currentDayForecastDefault: some View {
-    Text("No additional reviews today! \u{1F389}")
+    Text("No additional reviews today! \u{1F389}").equalSpacedFrame()
   }
 
   private var weekForecastDefault: some View {
-    Text("No upcoming reviews this week! \u{1F389}")
+    Text("No upcoming reviews this week! \u{1F389}").equalSpacedFrame()
   }
 
   var body: some View {
@@ -150,8 +162,9 @@ struct WidgetExtensionEntryView: View {
           else { currentDayForecastDefault }
         }
         Divider()
-        weekForecastMediumBox
-        Spacer()
+        if entry.data.dailyReviewForecast(date: entry.date).count > 0 {
+          weekForecastMediumBox
+        } else { weekForecastDefault }
       }
     }
   }

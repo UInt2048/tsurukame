@@ -22,7 +22,6 @@
 		4868F4C625276CE500B49700 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4868F4C525276CE500B49700 /* Assets.xcassets */; };
 		4868F4CC25276CE500B49700 /* WidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4868F4BE25276CE400B49700 /* WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		48A21BF625254E53007B2E2B /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A21BF525254E53007B2E2B /* TodayViewController.swift */; };
-		48A21BF925254E53007B2E2B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48A21BF725254E53007B2E2B /* MainInterface.storyboard */; };
 		48A21BFD25254E53007B2E2B /* Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 48A21BEF25254E53007B2E2B /* Widget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		48CF714823EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48CF714623EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m */; };
 		48D8B59D2526A17B000470EE /* WidgetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D8B48C252660B9000470EE /* WidgetHelper.swift */; };
@@ -278,7 +277,6 @@
 		48A21BF025254E53007B2E2B /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		48A21BF225254E53007B2E2B /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 		48A21BF525254E53007B2E2B /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
-		48A21BF825254E53007B2E2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		48A21BFA25254E53007B2E2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		48A21C1A25254F5A007B2E2B /* Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Widget.entitlements; sourceTree = "<group>"; };
 		48CF714623EAFA5600A838F4 /* TKMReviewBatchSizeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TKMReviewBatchSizeViewController.m; sourceTree = "<group>"; };
@@ -586,7 +584,6 @@
 			children = (
 				48A21C1A25254F5A007B2E2B /* Widget.entitlements */,
 				48A21BF525254E53007B2E2B /* TodayViewController.swift */,
-				48A21BF725254E53007B2E2B /* MainInterface.storyboard */,
 				48A21BFA25254E53007B2E2B /* Info.plist */,
 			);
 			path = Widget;
@@ -1142,7 +1139,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				48A21BF925254E53007B2E2B /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1581,14 +1577,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		48A21BF725254E53007B2E2B /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				48A21BF825254E53007B2E2B /* Base */,
-			);
-			name = MainInterface.storyboard;
-			sourceTree = "<group>";
-		};
 		63C42A2E21B6A290008CA938 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
