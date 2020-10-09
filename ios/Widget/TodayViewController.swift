@@ -59,12 +59,22 @@ private class TableViewSource: NSObject, UITableViewDataSource {
 @_functionBuilder struct LabelBuilder {
   static func buildBlock(_ labels: UILabel...) -> [UILabel] { labels }
   static func buildBlock(_ labels: [UILabel]...) -> [UILabel] { labels.flatMap { $0 } }
-  static func buildBlock(_ labels: [[UILabel]]...) -> [UILabel] { labels.flatMap { $0 }
-    .flatMap { $0 }
+
+  static func buildOptional(_ labels: UILabel?...) -> [UILabel] {
+    var array: [UILabel] = []
+    for optionalLabel in labels {
+      if let label = optionalLabel { array.append(label) }
+    }
+    return array
   }
 
-  static func buildOptional(_ labels: UILabel?...) -> [UILabel] { labels }
-  static func buildOptional(_ labels: [UILabel]?...) -> [UILabel] { labels ?? [] }
+  static func buildOptional(_ labels: [UILabel]?...) -> [UILabel] {
+    var array: [UILabel] = []
+    for optionalLabels in labels {
+      if let labels = optionalLabels { array.append(contentsOf: labels) }
+    }
+    return array
+  }
 }
 
 @_functionBuilder struct StackBuilder {
@@ -102,7 +112,7 @@ func Text(_ text: String) -> UILabel {
 func ForEach<Data: RandomAccessCollection>(_ array: Data,
                                            @LabelBuilder _ content: (Data.Element) -> [UILabel])
   -> [UILabel] {
-  var combinedArray: [UILabel]
+  var combinedArray: [UILabel] = []
   for element in array {
     combinedArray.append(contentsOf: content(element))
   }
@@ -146,19 +156,26 @@ private class Widget {
     }
   }
 
+  let forecastMedFont = UIFont.getFont(size: 10, weight: .light)
+
+  func forecastText(dayForecast: FutureDayForecast) -> [UILabel] {
+    var result: [UILabel] = []
+    result.append(Text(dayForecast.dayOfWeek).font(forecastMedFont))
+    for futureReviews in dayForecast.newReviewForecast {
+      result.append(Text("+\(futureReviews.newReviews)").font(forecastMedFont))
+    }
+    result.append(Text("+\(String(dayForecast.newReviews))").font(forecastMedFont))
+    result.append(Text("\(String(dayForecast.totalReviews))").font(forecastMedFont))
+    return result
+  }
+
   var weekForecastMediumBox: UITableView {
     VGrid(columns: 10) {
-      let forecastMedFont = UIFont.getFont(size: 10, weight: .light)
       ForEach(["", "0", "4", "8", "12", "16", "20", "23", "New", "All"]) { header in
         Text(header).font(forecastMedFont)
       }
-      ForEach(entry.data.dailyReviewForecast(date: entry.date)) { dayForecast in
-        Text(dayForecast.dayOfWeek).font(forecastMedFont)
-        ForEach(dayForecast.newReviewForecast) { futureReviews in
-          Text("+\(futureReviews.newReviews)").font(forecastMedFont)
-        }
-        Text("+\(String(dayForecast.newReviews))").font(forecastMedFont)
-        Text("\(String(dayForecast.totalReviews))").font(forecastMedFont)
+      ForEach(data.dailyReviewForecast(date: date)) { dayForecast in
+        forecastText(dayForecast: dayForecast)
       }
     }
   }
