@@ -15,6 +15,7 @@
 		4820306724D849E100B40FDD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633632EE201F3490006D582B /* Settings.swift */; };
 		483070C225276D3400150CF8 /* WidgetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D8B48C252660B9000470EE /* WidgetHelper.swift */; };
 		483070C325276D3400150CF8 /* WidgetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D8B48C252660B9000470EE /* WidgetHelper.swift */; };
+		483B04962530E65500E33F26 /* TodayViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B04952530E65500E33F26 /* TodayViewControllerExtensions.swift */; };
 		48519E95252555A30049A3A0 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48519E94252555A30049A3A0 /* NotificationCenter.framework */; };
 		4868F4BF25276CE400B49700 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4801CC8725276A98000EA03D /* WidgetKit.framework */; platformFilter = ios; };
 		4868F4C025276CE400B49700 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4801CC8925276A98000EA03D /* SwiftUI.framework */; };
@@ -265,6 +266,7 @@
 		4811E39424D9CB16003B5089 /* NSDate+TimeAgo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+TimeAgo.h"; sourceTree = "<group>"; };
 		481B2FEC23C55AAF0041EF1F /* CurrentLevelReviewTimeItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentLevelReviewTimeItem.swift; sourceTree = "<group>"; };
 		4826740B23ECE46900F704E4 /* TKMReviewBatchSizeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TKMReviewBatchSizeViewController.h; sourceTree = "<group>"; };
+		483B04952530E65500E33F26 /* TodayViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewControllerExtensions.swift; sourceTree = "<group>"; };
 		48519E94252555A30049A3A0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		4868F4BE25276CE400B49700 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4868F4C225276CE400B49700 /* WidgetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetExtension.swift; sourceTree = "<group>"; };
@@ -584,6 +586,7 @@
 			children = (
 				48A21C1A25254F5A007B2E2B /* Widget.entitlements */,
 				48A21BF525254E53007B2E2B /* TodayViewController.swift */,
+				483B04952530E65500E33F26 /* TodayViewControllerExtensions.swift */,
 				48A21BFA25254E53007B2E2B /* Info.plist */,
 			);
 			path = Widget;
@@ -1383,6 +1386,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				48A21BF625254E53007B2E2B /* TodayViewController.swift in Sources */,
+				483B04962530E65500E33F26 /* TodayViewControllerExtensions.swift in Sources */,
 				483070C225276D3400150CF8 /* WidgetHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
