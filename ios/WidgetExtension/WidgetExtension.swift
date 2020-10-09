@@ -119,15 +119,12 @@ struct WidgetExtensionEntryView: View {
   private var weekForecastMediumBox: some View {
     LazyVGrid(columns: gridLayout(columns: 10, spacing: 25.5, -4.8, 6.3), alignment: .trailing) {
       let forecastMedFont = Font.getFont(size: 10, weight: .light)
-      Text("").font(forecastMedFont)
-      ForEach([0, 4, 8, 12, 16, 20, 23], id: \.self) { hour in
-        Text("\(hour)").font(forecastMedFont)
+      ForEach(["", "0", "4", "8", "12", "16", "20", "23", "New", "All"], id: \.self) { header in
+        Text(header).font(forecastMedFont)
       }
-      Text("New").font(forecastMedFont)
-      Text("All").font(forecastMedFont)
       ForEach(entry.data.dailyReviewForecast(date: entry.date)) { dayForecast in
         Text(dayForecast.dayOfWeek).font(forecastMedFont)
-        ForEach(dayForecast.newReviewForecast, id: \.self) { futureReviews in
+        ForEach(dayForecast.newReviewForecast) { futureReviews in
           Text("+\(futureReviews.newReviews)").font(forecastMedFont)
         }
         Text("+\(String(dayForecast.newReviews))").font(forecastMedFont)

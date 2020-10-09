@@ -26,11 +26,9 @@ private extension UIFont {
 }
 
 private extension UILabel {
-  static func text(_ text: String, font: UIFont? = nil) -> UILabel {
-    let label = UILabel()
-    label.text = text
-    label.font = font
-    return label
+  func font(_ font: UIFont) -> UILabel {
+    self.font = font
+    return self
   }
 }
 
@@ -45,7 +43,7 @@ private class TableViewSource: NSObject, UITableViewDataSource {
     let cell = tableView
       .dequeueReusableCell(withIdentifier: "\(indexPath.section)-\(indexPath.row)",
                            for: indexPath)
-    let view = views[indexPath.section + indexPath.row * columns]
+    let view = labels[indexPath.section + indexPath.row * columns]
     cell.textLabel?.text = view.text
     cell.textLabel?.font = view.font
     return cell
@@ -60,6 +58,13 @@ private class TableViewSource: NSObject, UITableViewDataSource {
 
 @_functionBuilder struct LabelBuilder {
   static func buildBlock(_ labels: UILabel...) -> [UILabel] { labels }
+  static func buildBlock(_ labels: [UILabel]...) -> [UILabel] { labels.flatMap { $0 } }
+  static func buildBlock(_ labels: [[UILabel]]...) -> [UILabel] { labels.flatMap { $0 }
+    .flatMap { $0 }
+  }
+
+  static func buildOptional(_ labels: UILabel?...) -> [UILabel] { labels }
+  static func buildOptional(_ labels: [UILabel]?...) -> [UILabel] { labels ?? [] }
 }
 
 @_functionBuilder struct StackBuilder {
@@ -71,7 +76,7 @@ private class TableViewSource: NSObject, UITableViewDataSource {
 func VGrid(columns: Int, @LabelBuilder _ content: () -> [UILabel]) -> UITableView {
   let view = UITableView(), labels = content()
   let rows = Int(ceil(Double(labels.count) / Double(columns))),
-      dataSource = TableViewSource(columns: columns, rows: rows, labels: labels)
+    dataSource = TableViewSource(columns: columns, rows: rows, labels: labels)
   view.dataSource = dataSource
   return view
 }
@@ -88,6 +93,22 @@ func VStack(@StackBuilder _ content: () -> UIStackView) -> UIStackView {
   return view
 }
 
+func Text(_ text: String) -> UILabel {
+  let label = UILabel()
+  label.text = text
+  return label
+}
+
+func ForEach<Data: RandomAccessCollection>(_ array: Data,
+                                           @LabelBuilder _ content: (Data.Element) -> [UILabel])
+  -> [UILabel] {
+  var combinedArray: [UILabel]
+  for element in array {
+    combinedArray.append(contentsOf: content(element))
+  }
+  return combinedArray
+}
+
 private class Widget {
   var date: Date
   var data: ExpandedWidgetData
@@ -102,22 +123,45 @@ private class Widget {
   var lessonReviewSmallBox: UIStackView {
     VStack {
       HStack {
-        UILabel.text("\(data.lessons)", font: UIFont.getFont(size: 34.0, weight: .bold))
-        UILabel.text("\(data.reviews)", font: UIFont.getFont(size: 34.0, weight: .bold))
+        Text("\(data.lessons)").font(UIFont.getFont(size: 34.0, weight: .bold))
+        Text("\(data.reviews)").font(UIFont.getFont(size: 34.0, weight: .bold))
       }
       HStack {
-        UILabel.text("Lessons", font: UIFont.preferredFont(forTextStyle: .subheadline))
-        UILabel.text("Reviews", font: UIFont.preferredFont(forTextStyle: .subheadline))
+        Text("Lessons").font(UIFont.preferredFont(forTextStyle: .subheadline))
+        Text("Reviews").font(UIFont.preferredFont(forTextStyle: .subheadline))
       }
     }
   }
 
   var currentDayForecastSmallBox: UITableView {
     VGrid(columns: 3) {
+      ForEach(data.todayForecast(date: date)) { forecastEntry in
+        if forecastEntry.newReviews != 0 {
+          let forecastSmFont = UIFont.getFont(size: 11, weight: .light)
+          Text(forecastEntry.date.time).font(forecastSmFont)
+          Text("+\(forecastEntry.newReviews)").font(forecastSmFont)
+          Text("\(forecastEntry.totalReviews)").font(forecastSmFont)
+        }
+      }
     }
   }
 
-  var weekForecastMediumBox: UITableView {}
+  var weekForecastMediumBox: UITableView {
+    VGrid(columns: 10) {
+      let forecastMedFont = UIFont.getFont(size: 10, weight: .light)
+      ForEach(["", "0", "4", "8", "12", "16", "20", "23", "New", "All"]) { header in
+        Text(header).font(forecastMedFont)
+      }
+      ForEach(entry.data.dailyReviewForecast(date: entry.date)) { dayForecast in
+        Text(dayForecast.dayOfWeek).font(forecastMedFont)
+        ForEach(dayForecast.newReviewForecast) { futureReviews in
+          Text("+\(futureReviews.newReviews)").font(forecastMedFont)
+        }
+        Text("+\(String(dayForecast.newReviews))").font(forecastMedFont)
+        Text("\(String(dayForecast.totalReviews))").font(forecastMedFont)
+      }
+    }
+  }
 
   var body: UIStackView {
     if expanded {
@@ -138,19 +182,6 @@ private class Widget {
 }
 
 class TodayViewController: UIViewController, NCWidgetProviding {
-  private func lessonReviewSmallBox(data: ExpandedWidgetData) -> UIStackView {
-    VStack {
-      HStack {
-        UILabel.text("\(data.lessons)", font: UIFont.getFont(size: 34.0, weight: .bold))
-        UILabel.text("\(data.reviews)", font: UIFont.getFont(size: 34.0, weight: .bold))
-      }
-      HStack {
-        UILabel.text("Lessons", font: UIFont.preferredFont(forTextStyle: .subheadline))
-        UILabel.text("Reviews", font: UIFont.preferredFont(forTextStyle: .subheadline))
-      }
-    }
-  }
-
   func updateWidget() {
     print("Attempting to update widget")
     let widget = Widget(date: Date(), data: WidgetHelper.readProjectedData(Date()),
