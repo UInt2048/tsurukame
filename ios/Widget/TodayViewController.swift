@@ -36,6 +36,7 @@ private class Widget {
         Text("Lessons").font(UIFont.preferredFont(forTextStyle: .subheadline))
         Text("Reviews").font(UIFont.preferredFont(forTextStyle: .subheadline))
       }
+      Text(date.time)
     }
   }
 
@@ -99,7 +100,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     print("Attempting to update widget")
     let widget = Widget(date: Date(), data: WidgetHelper.readProjectedData(Date()),
                         size: preferredContentSize)
-    view.addSubview(widget.lessonReviewSmallBox)
+    view.addSubview(widget.body)
   }
 
   override func viewDidLoad() {

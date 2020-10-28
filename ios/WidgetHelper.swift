@@ -81,11 +81,11 @@ public struct FutureDayForecast: Codable, Hashable, Identifiable {
   }
 
   public var startingReviews: Int {
-    limitedForecast.first!.totalReviews - limitedForecast.first!.newReviews
+    (limitedForecast.first?.totalReviews ?? 0) - (limitedForecast.first?.newReviews ?? 0)
   }
 
   public var newReviews: Int { limitedForecast.reduce(0) { $0 + $1.newReviews } }
-  public var totalReviews: Int { limitedForecast.last!.totalReviews }
+  public var totalReviews: Int { limitedForecast.last?.totalReviews ?? 0 }
   public init(date: Date, startingCount: FutureReviewCount) {
     dayOfWeek = date.dayOfWeek
     limitedForecast = [startingCount]

@@ -104,31 +104,31 @@ struct WidgetExtensionEntryView: View {
   }
 
   private var currentDayForecastSmallBox: some View {
-    LazyVGrid(columns: gridLayout(columns: 3, spacing: 28, 22.4), alignment: .trailing) {
+    LazyVGrid(columns: gridLayout(columns: 3, spacing: 28, 25), alignment: .trailing) {
       ForEach(entry.data.todayForecast(date: entry.date)) { forecastEntry in
         if forecastEntry.newReviews != 0 {
           let forecastSmFont = Font.getFont(size: 11, weight: .light)
           Text(forecastEntry.date.time).font(forecastSmFont)
           Text("+\(forecastEntry.newReviews)").font(forecastSmFont)
-          Text("\(forecastEntry.totalReviews)").font(forecastSmFont)
+          Text("\(forecastEntry.totalReviews) ").font(forecastSmFont)
         }
       }
     }.equalSpacedFrame()
   }
 
   private var weekForecastMediumBox: some View {
-    LazyVGrid(columns: gridLayout(columns: 10, spacing: 25.5, -4.8, 6.3), alignment: .trailing) {
-      let forecastMedFont = Font.getFont(size: 10, weight: .light)
+    LazyVGrid(columns: gridLayout(columns: 10, spacing: 25, -4, 6), alignment: .trailing) {
+      let forecastMedFont = Font.getFont(size: 9.5, weight: .light)
       ForEach(["", "0", "4", "8", "12", "16", "20", "23", "New", "All"], id: \.self) { header in
         Text(header).font(forecastMedFont)
       }
       ForEach(entry.data.dailyReviewForecast(date: entry.date)) { dayForecast in
-        Text(dayForecast.dayOfWeek).font(forecastMedFont)
+        Text("\(dayForecast.dayOfWeek)").font(forecastMedFont)
         ForEach(dayForecast.newReviewForecast) { futureReviews in
           Text("+\(futureReviews.newReviews)").font(forecastMedFont)
         }
         Text("+\(String(dayForecast.newReviews))").font(forecastMedFont)
-        Text("\(String(dayForecast.totalReviews))").font(forecastMedFont)
+        Text("\(String(dayForecast.totalReviews)) ").font(forecastMedFont)
       }
     }.equalSpacedFrame()
   }
