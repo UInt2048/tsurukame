@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import Foundation
+import PromiseKit
 
 private let kDefaultProfileImageURL =
   "https://cdn.wanikani.com/default-avatar-300x300-20121121.png"
@@ -113,20 +114,20 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
     let nc = NotificationCenter.default
     nc.addObserver(self,
                    selector: #selector(availableItemsChanged),
-                   name: NSNotification.Name.localCachingClientAvailableItemsChanged,
-                   object: services.localCachingClient)
+                   name: NSNotification.Name.lccAvailableItemsChanged,
+                   object: nil)
     nc.addObserver(self,
                    selector: #selector(userInfoChanged),
-                   name: NSNotification.Name.localCachingClientUserInfoChanged,
-                   object: services.localCachingClient)
+                   name: NSNotification.Name.lccUserInfoChanged,
+                   object: nil)
     nc.addObserver(self,
                    selector: #selector(srsLevelCountsChanged),
-                   name: NSNotification.Name.localCachingClientSrsLevelCountsChanged,
-                   object: services.localCachingClient)
+                   name: NSNotification.Name.lccSRSCategoryCountsChanged,
+                   object: nil)
     nc.addObserver(self,
                    selector: #selector(clientIsUnauthorized),
-                   name: NSNotification.Name.localCachingClientUnauthorized,
-                   object: services.localCachingClient)
+                   name: NSNotification.Name.lccUnauthorized,
+                   object: nil)
     nc.addObserver(self,
                    selector: #selector(applicationDidEnterBackground),
                    name: UIApplication.didEnterBackgroundNotification,
@@ -153,9 +154,10 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
   private func recreateTableModel() {
     guard let user = services.localCachingClient.getUserInfo() else { return }
 
-    let lessons = Int(services.localCachingClient.availableLessonCount)
-    let reviews = Int(services.localCachingClient.availableReviewCount)
-    let upcomingReviews = services.localCachingClient.upcomingReviews as! [Int]
+    let availableSubjects = services.localCachingClient.availableSubjects
+    let lessons = Int(availableSubjects.lessonCount)
+    let reviews = Int(availableSubjects.reviewCount)
+    let upcomingReviews = availableSubjects.upcomingReviews
     let currentLevelAssignments = services.localCachingClient.getAssignmentsAtUsersCurrentLevel()
 
     let model = TKMMutableTableModel(tableView: tableView)
@@ -189,8 +191,7 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
     }
 
     model.addSection("This level")
-    model.add(CurrentLevelChartItem(dataLoader: services.dataLoader,
-                                    currentLevelAssignments: currentLevelAssignments))
+    model.add(CurrentLevelChartItem(currentLevelAssignments: currentLevelAssignments))
 
     if !user.hasVacationStartedAt {
       model
@@ -211,9 +212,8 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
                                 action: #selector(showAll)))
 
     model.addSection("All levels")
-    for i in TKMSRSStageCategory.apprentice.rawValue ... TKMSRSStageCategory.burned.rawValue {
-      let category = TKMSRSStageCategory(rawValue: i)!
-      let count = services.localCachingClient.getSrsLevelCount(category)
+    for category in SRSStageCategory.apprentice ... SRSStageCategory.burned {
+      let count = services.localCachingClient.srsCategoryCounts[category.rawValue]
       model.add(SRSStageCategoryItem(stageCategory: category, count: Int(count)))
     }
 
@@ -254,9 +254,8 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
     switch segue.identifier {
     case "startReviews":
       let assignments = services.localCachingClient.getAllAssignments()
-      let items = ReviewItem.assignmentsReady(forReview: assignments,
-                                              dataLoader: services.dataLoader,
-                                              localCachingClient: services.localCachingClient)
+      let items = ReviewItem.readyForReview(assignments: assignments,
+                                            localCachingClient: services.localCachingClient)
       if items.count == 0 {
         return
       }
@@ -266,20 +265,19 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
 
     case "startLessons":
       let assignments = services.localCachingClient.getAllAssignments()
-      var items = ReviewItem.assignmentsReady(forLesson: assignments,
-                                              dataLoader: services.dataLoader,
-                                              localCachingClient: services.localCachingClient)
+      var items = ReviewItem.readyForLessons(assignments: assignments,
+                                             localCachingClient: services.localCachingClient)
       if items.count == 0 {
         return
       }
 
-      items = items.sorted(by: { a, b in a.compare(forLessons: b) })
+      items = items.sorted(by: { a, b in a.compareForLessons(other: b) })
       if items.count > Settings.lessonBatchSize {
         items = Array(items[0 ..< Int(Settings.lessonBatchSize)])
       }
 
       let vc = segue.destination as! LessonsViewController
-      vc.setup(with: services, items: items)
+      vc.setup(services: services, items: items)
 
     case "showAll":
       let vc = segue.destination as! SubjectCatalogueViewController
@@ -288,11 +286,11 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
 
     case "showRemaining":
       let vc = segue.destination as! SubjectsRemainingViewController
-      vc.setup(with: services)
+      vc.setup(services: services)
 
     case "settings":
       let vc = segue.destination as! SettingsViewController
-      vc.setup(with: services)
+      vc.setup(services: services)
 
     default:
       break
@@ -364,10 +362,10 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
     updateUserInfo()
     scheduleTableModelUpdate()
     guard let headerView = headerView else { return }
-    headerView.setProgress(0)
-    services.localCachingClient.sync(progressHandler: { progress in
-      self.headerView.setProgress(progress)
-    }, quick: quick)
+
+    let progress = Progress(totalUnitCount: -1)
+    headerView.setProgress(progress: progress)
+    services.localCachingClient.sync(quick: quick, progress: progress)
   }
 
   @objc func availableItemsChanged() {
@@ -385,7 +383,7 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
       let headerView = headerView,
       Settings.userEmailAddress != "" else { return }
     let email = Settings.userEmailAddress
-    let guruKanji = services.localCachingClient.getGuruKanjiCount()
+    let guruKanji = services.localCachingClient.guruKanjiCount
     let imageURL = email.isEmpty ? URL(string: kDefaultProfileImageURL)
       : userProfileImageURL(emailAddress: email)
 
@@ -438,8 +436,9 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
   }
 
   func loginComplete() {
-    services.localCachingClient.client
-      .updateApiToken(Settings.userApiToken, cookie: Settings.userCookie)
+    // TODO: uncomment
+    // services.localCachingClient.client
+    //  .updateApiToken(Settings.userApiToken, cookie: Settings.userCookie)
     navigationController?.popViewController(animated: true)
     isShowingUnauthorizedAlert = false
   }
@@ -451,10 +450,10 @@ class MainViewController: UITableViewController, LoginViewControllerDelegate,
 
   // MARK: - Search
 
-  func searchResultSelected(_ subject: TKMSubject) {
+  func searchResultSelected(subject: TKMSubject) {
     let vc = storyboard?
       .instantiateViewController(withIdentifier: "subjectDetailsViewController") as! SubjectDetailsViewController
-    vc.setup(with: services, subject: subject, showHints: true, hideBackButton: false, index: 0)
+    vc.setup(services: services, subject: subject, showHints: true, hideBackButton: false, index: 0)
     searchController.dismiss(animated: true) {
       self.navigationController?.pushViewController(vc, animated: true)
     }

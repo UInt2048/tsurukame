@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,20 +13,19 @@
 // limitations under the License.
 
 import Foundation
+import Reachability
 
 @objc
 @objcMembers
 class TKMServices: NSObject {
-  let dataLoader: DataLoader
   let reachability: Reachability
   let fontLoader: TKMFontLoader
 
   private(set) var audio: Audio!
+  var client: WaniKaniAPIClient!
   var localCachingClient: LocalCachingClient!
 
   override init() {
-    dataLoader = try! DataLoader(fromURL: Bundle.main.url(forResource: "data",
-                                                          withExtension: "bin")!)
     reachability = Reachability.forInternetConnection()
     fontLoader = TKMFontLoader()
 

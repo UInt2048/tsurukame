@@ -14,8 +14,6 @@
 
 #import "TKMReviewContainerViewController.h"
 
-#import "LocalCachingClient.h"
-#import "ReviewItem.h"
 #import "TKMReviewMenuViewController.h"
 #import "Tsurukame-Swift.h"
 

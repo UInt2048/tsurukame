@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ private func calculateLevelTimeRemaining(services: TKMServices,
     if assignment.subjectType != .radical {
       continue
     }
-    guard let subject = services.dataLoader.load(subjectID: Int(assignment.subjectId)),
-      let guruDate = assignment.guruDate(for: subject) else {
+    guard let subject = services.localCachingClient.getSubject(id: assignment.subjectID),
+      let guruDate = assignment.guruDate(subject: subject) else {
       continue
     }
     radicalDates.append(guruDate)
@@ -54,8 +54,8 @@ private func calculateLevelTimeRemaining(services: TKMServices,
       guruDates.append(Date.distantFuture)
       continue
     }
-    guard let subject = services.dataLoader.load(subjectID: Int(assignment.subjectId)),
-      let guruDate = assignment.guruDate(for: subject) else {
+    guard let subject = services.localCachingClient.getSubject(id: assignment.subjectID),
+      let guruDate = assignment.guruDate(subject: subject) else {
       continue
     }
     guruDates.append(guruDate)
@@ -70,10 +70,12 @@ private func calculateLevelTimeRemaining(services: TKMServices,
       // There is still a locked kanji needed for level-up, so we don't know how long
       // the user will take to level up. Use their average level time, minus the time
       // they've spent at this level so far, as an estimate.
-      var average = services.localCachingClient!.getAverageRemainingLevelTime()
+      var average = averageRemainingLevelTime(services.localCachingClient!)
       // But ensure it can't be less than the time it would take to get a fresh item
       // to Guru, if they've spent longer at the current level than the average.
-      average = max(average, TKMMinimumTimeUntilGuruSeconds(wkLevel, 1) + lastRadicalGuruTime)
+      average = max(average,
+                    SRSStage.apprentice1
+                      .minimumTimeUntilGuru(itemLevel: Int(wkLevel)) + lastRadicalGuruTime)
       return (Date(timeIntervalSinceNow: average), isEstimate: true)
     } else {
       return (lastGuruDate, isEstimate: false)
@@ -81,6 +83,29 @@ private func calculateLevelTimeRemaining(services: TKMServices,
   }
 
   return (Date(), false)
+}
+
+private func averageRemainingLevelTime(_ lcc: LocalCachingClient) -> TimeInterval {
+  var timeSpentAtEachLevel = [TimeInterval]()
+  for level in lcc.getAllLevelProgressions() {
+    timeSpentAtEachLevel.append(level.timeSpentCurrent)
+  }
+  if timeSpentAtEachLevel.isEmpty {
+    return 0
+  }
+
+  let currentLevelTime = timeSpentAtEachLevel.last!
+  let lastPassIndex = timeSpentAtEachLevel.count - 1
+
+  // Use the median 50% to calculate the average time
+  let lowerIndex = lastPassIndex / 4 + (lastPassIndex % 4 == 3 ? 1 : 0)
+  let upperIndex = lastPassIndex * 3 / 4 + (lastPassIndex == 1 ? 1 : 0)
+
+  let medianPassRange = timeSpentAtEachLevel[lowerIndex ... upperIndex]
+  let averageTime = medianPassRange.reduce(0, +) / Double(medianPassRange.count)
+  let remainingTime = averageTime - currentLevelTime
+
+  return remainingTime
 }
 
 private func intervalString(_ date: Date) -> String {

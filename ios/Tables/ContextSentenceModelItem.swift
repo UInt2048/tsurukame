@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ class ContextSentenceModelItem: AttributedModelItem {
   let japaneseText: NSAttributedString
   let englishText: NSAttributedString
 
-  init(_ sentence: TKMVocabulary_Sentence,
+  init(_ sentence: TKMVocabulary.Sentence,
        highlightSubject: TKMSubject,
        defaultAttributes: [NSAttributedString.Key: Any],
        fontSize: CGFloat) {

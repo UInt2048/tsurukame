@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class WatchConnectionClientDelegate: NSObject, WCSessionDelegate {
       var halfLevel = false
       var assignmentsAtCurrentLevel = client.getAssignmentsAtUsersCurrentLevel()
       var learnedCount = assignmentsAtCurrentLevel.filter { (assignment) -> Bool in
-        assignment.srsStage >= 5
+        assignment.srsStage >= .guru1
       }.count
 
       // If the user is in the vocab and technically levels up but has 0
@@ -111,9 +111,9 @@ class WatchConnectionClientDelegate: NSObject, WCSessionDelegate {
         let assignment = assignmentsAtCurrentLevel.first,
         assignment.level > 0 {
         halfLevel = true
-        assignmentsAtCurrentLevel = client.getAssignmentsAtLevel(assignment.level - 1)
+        assignmentsAtCurrentLevel = client.getAssignments(level: Int(assignment.level) - 1)
         learnedCount = assignmentsAtCurrentLevel.filter { (assignment) -> Bool in
-          assignment.srsStage >= 5
+          assignment.srsStage >= .guru1
         }.count
       }
 
@@ -125,8 +125,8 @@ class WatchConnectionClientDelegate: NSObject, WCSessionDelegate {
 
       let packet: [String: Any] = [
         WatchHelper.keyReviewCount: client.availableReviewCount,
-        WatchHelper.keyReviewNextHourCount: client.upcomingReviews.first?.intValue ?? 0,
-        WatchHelper.keyReviewUpcomingHourlyCounts: client.upcomingReviews.map { $0.intValue },
+        WatchHelper.keyReviewNextHourCount: client.upcomingReviews.first ?? 0,
+        WatchHelper.keyReviewUpcomingHourlyCounts: client.upcomingReviews,
         WatchHelper.keyLevelCurrent: assignmentsAtCurrentLevel.first?.level ?? 0,
         WatchHelper.keyLevelTotal: assignmentsAtCurrentLevel.count,
         WatchHelper.keyLevelLearned: learnedCount,

@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ enum PieSlice: Int {
     case .Lesson:
       return "Lesson"
     case .Apprentice:
-      return TKMSRSStageCategoryName(.apprentice)
+      return SRSStageCategory.apprentice.description
     case .Guru:
-      return TKMSRSStageCategoryName(.guru)
+      return SRSStageCategory.guru.description
     }
   }
 
@@ -65,12 +65,10 @@ func unsetAllLabels(view: ChartViewBase) {
   }
 }
 
-@objc class CurrentLevelChartItem: NSObject, TKMModelItem {
-  let dataLoader: DataLoader
+class CurrentLevelChartItem: NSObject, TKMModelItem {
   let currentLevelAssignments: [TKMAssignment]
 
-  @objc init(dataLoader: DataLoader, currentLevelAssignments: [TKMAssignment]) {
-    self.dataLoader = dataLoader
+  init(currentLevelAssignments: [TKMAssignment]) {
     self.currentLevelAssignments = currentLevelAssignments
     super.init()
   }
@@ -94,6 +92,7 @@ class CurrentLevelChartCell: TKMModelCell {
     strongDelegate = Delegate()
     super.init(style: style, reuseIdentifier: reuseIdentifier)
     selectionStyle = .none
+    backgroundColor = TKMStyle.Color.cellBackground
 
     radicalChart = createChartView()
     kanjiChart = createChartView()
@@ -165,7 +164,7 @@ class CurrentLevelChartCell: TKMModelCell {
   }
 
   private func update(chart: PieChartView,
-                      subjectType: TKMSubject_Type,
+                      subjectType: TKMSubject.TypeEnum,
                       withAssignments assignments: [TKMAssignment]) {
     var sliceSizes = [Int](repeating: 0, count: PieSlice.count)
     for assignment in assignments {
@@ -176,9 +175,9 @@ class CurrentLevelChartCell: TKMModelCell {
       var slice: PieSlice
       if assignment.isLessonStage {
         slice = .Lesson
-      } else if !assignment.hasSrsStage {
+      } else if !assignment.hasSrsStageNumber {
         slice = .Locked
-      } else if assignment.srsStage < 5 {
+      } else if assignment.srsStage < .guru1 {
         slice = .Apprentice
       } else {
         slice = .Guru

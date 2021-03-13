@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ class AppStoreScreenshots: XCTestCase {
     search.typeText("sake\n")
     Thread.sleep(forTimeInterval: 0.5)
     snapshot("04_search")
-    search.tap()
-    search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 4))
+    search.buttons["Clear text"].tap()
 
     // Select a subject and snapshot the subject details
     search.typeText("person")
@@ -58,7 +57,7 @@ class AppStoreScreenshots: XCTestCase {
     snapshot("05_catalogue")
     app.navigationBars["Level 24"].buttons["Back"].tap()
 
-    // Lessons view
+    // Reviews view
     app.tables.staticTexts["Reviews"].tap()
     snapshot("02_lesson")
   }

@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,43 +53,43 @@ private let kDotColorMaster = UIColor(red: 0.16, green: 0.30, blue: 0.86, alpha:
 private let kDotColorEnlightened = UIColor(red: 0.00, green: 0.58, blue: 0.87, alpha: 1.0)
 private let kDotColorBurned = UIColor(red: 0.26, green: 0.26, blue: 0.26, alpha: 1.0)
 
-private func getDotsForLevel(_ level: Int32) -> NSAttributedString? {
+private func getDots(stage: SRSStage) -> NSAttributedString? {
   var string: NSMutableAttributedString?
-  switch level {
-  case 1:
+  switch stage {
+  case .apprentice1:
     string = NSMutableAttributedString(string: "•◦◦◦",
                                        attributes: [.foregroundColor: kDotColorApprentice])
-  case 2:
+  case .apprentice2:
     string = NSMutableAttributedString(string: "••◦◦",
                                        attributes: [.foregroundColor: kDotColorApprentice])
-  case 3:
+  case .apprentice3:
     string = NSMutableAttributedString(string: "•••◦",
                                        attributes: [.foregroundColor: kDotColorApprentice])
-  case 4:
+  case .apprentice4:
     string = NSMutableAttributedString(string: "••••◦",
                                        attributes: [.foregroundColor: kDotColorApprentice])
     string?
       .addAttribute(.foregroundColor, value: kDotColorGuru, range: NSRange(location: 4, length: 1))
-  case 5:
+  case .guru1:
     string = NSMutableAttributedString(string: "•◦", attributes: [.foregroundColor: kDotColorGuru])
-  case 6:
+  case .guru2:
     string = NSMutableAttributedString(string: "••◦", attributes: [.foregroundColor: kDotColorGuru])
     string?
       .addAttribute(.foregroundColor, value: kDotColorMaster,
                     range: NSRange(location: 2, length: 1))
-  case 7:
+  case .master:
     string = NSMutableAttributedString(string: "•◦",
                                        attributes: [.foregroundColor: kDotColorMaster])
     string?
       .addAttribute(.foregroundColor, value: kDotColorEnlightened,
                     range: NSRange(location: 1, length: 1))
-  case 8:
+  case .enlightened:
     string = NSMutableAttributedString(string: "•◦",
                                        attributes: [.foregroundColor: kDotColorEnlightened])
     string?
       .addAttribute(.foregroundColor, value: kDotColorBurned,
                     range: NSRange(location: 1, length: 1))
-  case 9:
+  case .burned:
     string = NSMutableAttributedString(string: "•", attributes: [.foregroundColor: kDotColorBurned])
   default:
     string = nil
@@ -149,7 +149,7 @@ protocol ReviewViewControllerDelegate {
                                            tappedMenuButton menuButton: UIButton)
 }
 
-class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDelegate {
+class ReviewViewController: UIViewController, UITextFieldDelegate, SubjectDelegate {
   private var kanaInput: TKMKanaInput!
   private let hapticGenerator = UIImpactFeedbackGenerator(style: UIImpactFeedbackGenerator
     .FeedbackStyle.light)
@@ -168,7 +168,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
   private var activeQueueSize = 1
 
   private var activeTaskIndex = 0 // An index into activeQueue.
-  private var activeTaskType: TKMTaskType!
+  private var activeTaskType: TaskType!
   private var activeTask: ReviewItem!
   private var activeSubject: TKMSubject!
   private var activeStudyMaterials: TKMStudyMaterials?
@@ -227,7 +227,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
     kanaInput = TKMKanaInput(delegate: self)
   }
 
-  @objc public func setup(withServices services: TKMServices,
+  @objc public func setup(services: TKMServices,
                           items: [ReviewItem],
                           showMenuButton: Bool,
                           showSubjectHistory: Bool,
@@ -246,7 +246,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
     }
 
     reviewQueue.shuffle()
-    switch ReviewOrder(rawValue: Settings.reviewOrder)! {
+    switch Settings.reviewOrder {
     case .ascendingSRSStage:
       reviewQueue.sort { (a, b: ReviewItem) -> Bool in
         if a.assignment.srsStage < b.assignment.srsStage { return true }
@@ -328,7 +328,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
                                            name: UIResponder.keyboardWillShowNotification,
                                            object: nil)
 
-    subjectDetailsView.setup(withServices: services, delegate: self)
+    subjectDetailsView.setup(services: services, delegate: self)
 
     answerField.autocapitalizationType = .none
     answerField.delegate = kanaInput
@@ -386,7 +386,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
 
     super.viewWillAppear(animated)
     SiriShortcutHelper.shared
-      .attachShortcutActivity(self, type: SiriShortcutHelper.ShortcutTypeReviews)
+      .attachShortcutActivity(self, type: .reviews)
     navigationController?.setNavigationBarHidden(true, animated: false)
     if subjectDetailsView.isHidden {
       answerField.becomeFirstResponder()
@@ -461,10 +461,10 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
     switch segue.identifier {
     case "reviewSummary":
       let vc = segue.destination as! ReviewSummaryViewController
-      vc.setup(with: services, items: completedReviews)
+      vc.setup(services: services, items: completedReviews)
     case "subjectDetails":
       let vc = segue.destination as! SubjectDetailsViewController
-      vc.setup(with: services, subject: sender as! TKMSubject)
+      vc.setup(services: services, subject: sender as! TKMSubject)
     default:
       break
     }
@@ -520,22 +520,22 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
       // Choose a random task from the active queue.
       activeTaskIndex = Int(arc4random_uniform(UInt32(activeQueue.count)))
       activeTask = activeQueue[activeTaskIndex]
-      activeSubject = services.dataLoader.load(subjectID: Int(activeTask.assignment.subjectId))!
+      activeSubject = services.localCachingClient.getSubject(id: activeTask.assignment.subjectID)!
       activeStudyMaterials =
-        services.localCachingClient.getStudyMaterial(forID: activeTask.assignment.subjectId)
+        services.localCachingClient
+          .getStudyMaterial(subjectId: activeTask.assignment.subjectID)
       activeAssignment =
-        services.localCachingClient.getAssignmentForID(activeTask.assignment.subjectId)
+        services.localCachingClient.getAssignment(subjectId: activeTask.assignment.subjectID)
 
       // Choose whether to ask the meaning or the reading.
       if activeTask.answeredMeaning {
-        activeTaskType = TKMTaskType.reading
+        activeTaskType = .reading
       } else if activeTask.answeredReading || activeSubject.hasRadical {
-        activeTaskType = TKMTaskType.meaning
+        activeTaskType = .meaning
       } else if Settings.groupMeaningReading {
-        activeTaskType = Settings.meaningFirst ? TKMTaskType.meaning : TKMTaskType.reading
+        activeTaskType = Settings.meaningFirst ? .meaning : .reading
       } else {
-        activeTaskType = TKMTaskType(rawValue: TKMTaskType
-          .RawValue(arc4random_uniform(UInt32(TKMTaskType._Max.rawValue))))!
+        activeTaskType = TaskType.random()
       }
 
       // Fill the question labels.
@@ -552,9 +552,13 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
         subjectTypePrompt = "Radical"
       case .vocabulary:
         subjectTypePrompt = "Vocabulary"
+<<<<<<< HEAD
       case .unknown: fallthrough
       case .gpbUnrecognizedEnumeratorValue: fallthrough
       @unknown default:
+=======
+      default:
+>>>>>>> main
         fatalError()
       }
       switch activeTaskType! {
@@ -570,10 +574,13 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
         promptGradient = TKMStyle.readingGradient as! [CGColor]
         promptTextColor = kReadingTextColor
         taskTypePlaceholder = "答え"
+<<<<<<< HEAD
       case ._Max:
         fallthrough
       @unknown default:
         fatalError()
+=======
+>>>>>>> main
       }
 
       // Choose a random font.
@@ -625,7 +632,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
         .autoSwitchKeyboard && activeTaskType == .reading
 
       if Settings.showSRSLevelIndicator {
-        levelLabel.attributedText = getDotsForLevel(activeTask.assignment.srsStage)
+        levelLabel.attributedText = getDots(stage: activeTask.assignment.srsStage)
       } else {
         levelLabel.attributedText = nil
       }
@@ -1023,7 +1030,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
                                            subject: activeSubject,
                                            studyMaterials: activeStudyMaterials,
                                            taskType: activeTaskType,
-                                           dataLoader: services.dataLoader)
+                                           localCachingClient: services.localCachingClient)
 
     switch result {
     case .Precise:
@@ -1128,11 +1135,20 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
       activeTask.answeredMeaning && (activeSubject.hasRadical || activeTask.answeredReading)
     let didLevelUp = (!activeTask.answer.readingWrong && !activeTask.answer.meaningWrong)
     let newSrsStage =
-      didLevelUp ? activeTask.assignment.srsStage + 1 : activeTask.assignment.srsStage - 1
+      didLevelUp ? activeTask.assignment.srsStage.next : activeTask.assignment.srsStage.previous
     if isSubjectFinished {
       let date = Int32(Date().timeIntervalSince1970)
       if date > activeTask.assignment.availableAt {
         activeTask.answer.createdAt = date
+      }
+
+      if Settings.minimizeReviewPenalty {
+        if activeTask.answer.meaningWrong {
+          activeTask.answer.meaningWrongCount = 1
+        }
+        if activeTask.answer.readingWrong {
+          activeTask.answer.readingWrongCount = 1
+        }
       }
 
       services.localCachingClient!.sendProgress([activeTask.answer])
@@ -1146,8 +1162,8 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
     // Show a new task if it was correct.
     if result != .Incorrect {
       if Settings.playAudioAutomatically, activeTaskType == .reading,
-        activeSubject.hasVocabulary, activeSubject.vocabulary.audioIdsArray_Count > 0 {
-        services.audio.play(subjectID: Int(activeSubject!.id_p), delegate: nil)
+        activeSubject.hasVocabulary, !activeSubject.vocabulary.audioIds.isEmpty {
+        services.audio.play(subjectID: activeSubject!.id, delegate: nil)
       }
 
       var previousSubjectLabel: UILabel?
@@ -1161,7 +1177,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
         // new locations by randomTask(), so that, for example, the success sparkles animate from
         // the final position of the answerField, not the original position.
         RunSuccessAnimation(answerField, doneLabel, levelLabel, isSubjectFinished, didLevelUp,
-                            newSrsStage)
+                            newSrsStage.rawValue)
       }
 
       if let previousSubjectLabel = previousSubjectLabel {
@@ -1238,10 +1254,9 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
   @objc func addSynonym() {
     if activeStudyMaterials == nil {
       activeStudyMaterials = TKMStudyMaterials()
-      activeStudyMaterials!.subjectId = activeSubject.id_p
-      activeStudyMaterials!.subjectType = activeSubject.subjectTypeString
+      activeStudyMaterials!.subjectID = activeSubject.id
     }
-    activeStudyMaterials!.meaningSynonymsArray.add(answerField.text!)
+    activeStudyMaterials!.meaningSynonyms.append(answerField.text!)
     services.localCachingClient?.updateStudyMaterial(activeStudyMaterials!)
     markAnswer(.OverrideAnswerCorrect)
   }
@@ -1253,9 +1268,9 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
     super.canPerformAction(action, withSender: sender)
   }
 
-  // MARK: - TKMSubjectDelegate
+  // MARK: - SubjectDelegate
 
-  func didTap(_ subject: TKMSubject!) {
+  func didTapSubject(_ subject: TKMSubject) {
     performSegue(withIdentifier: "subjectDetails", sender: subject)
   }
 
@@ -1292,6 +1307,8 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, TKMSubjectDel
                                                    modifierFlags: [],
                                                    action: #selector(playAudio),
                                                    discoverabilityTitle: "Play reading"),
+                                      UIKeyCommand(input: "j", modifierFlags: [],
+                                                   action: #selector(playAudio)),
                                       UIKeyCommand(input: "a",
                                                    modifierFlags: [.command],
                                                    action: #selector(askAgain),

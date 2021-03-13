@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,8 +76,8 @@ class Audio: NSObject {
     }
   }
 
-  func play(subjectID: Int, delegate: AudioDelegate?) {
-    guard let subject = services.dataLoader.load(subjectID: subjectID) else {
+  func play(subjectID: Int32, delegate: AudioDelegate?) {
+    guard let subject = services.localCachingClient.getSubject(id: subjectID) else {
       return
     }
     let audioID = subject.randomAudioID()

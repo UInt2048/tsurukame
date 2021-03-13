@@ -1,4 +1,4 @@
-// Copyright 2020 David Sansome
+// Copyright 2021 David Sansome
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ private func calculateCurrentLevelReviewTime(services: TKMServices,
       guruDates.append(Date.distantFuture)
       continue
     }
-    guard let subject = services.dataLoader.load(subjectID: Int(assignment.subjectId)),
-      let guruDate = assignment.guruDate(for: subject) else {
+    guard let subject = services.localCachingClient.getSubject(id: assignment.subjectID),
+      let guruDate = assignment.guruDate(subject: subject) else {
       continue
     }
     guruDates.append(guruDate)
