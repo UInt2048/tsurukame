@@ -552,13 +552,7 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, SubjectDelega
         subjectTypePrompt = "Radical"
       case .vocabulary:
         subjectTypePrompt = "Vocabulary"
-<<<<<<< HEAD
-      case .unknown: fallthrough
-      case .gpbUnrecognizedEnumeratorValue: fallthrough
-      @unknown default:
-=======
       default:
->>>>>>> main
         fatalError()
       }
       switch activeTaskType! {
@@ -574,13 +568,6 @@ class ReviewViewController: UIViewController, UITextFieldDelegate, SubjectDelega
         promptGradient = TKMStyle.readingGradient as! [CGColor]
         promptTextColor = kReadingTextColor
         taskTypePlaceholder = "答え"
-<<<<<<< HEAD
-      case ._Max:
-        fallthrough
-      @unknown default:
-        fatalError()
-=======
->>>>>>> main
       }
 
       // Choose a random font.
